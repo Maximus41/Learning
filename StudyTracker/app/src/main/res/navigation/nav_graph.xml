@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/subjectsFragment">
+
+    <fragment
+        android:id="@+id/subjectsFragment"
+        android:name="com.poc.studytracker.subjects.uicontrollers.SubjectsFragment"
+        android:label="SubjectsFragment" />
+    <fragment
+        android:id="@+id/sessionsFragment"
+        android:name="com.poc.studytracker.SessionsFragment"
+        android:label="fragment_sessions"
+        tools:layout="@layout/fragment_sessions" />
+</navigation>

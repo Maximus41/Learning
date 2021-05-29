@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".AssessSessionFragment"
+    android:layout_margin="16dp">
+
+    <TextView
+        android:id="@+id/sessionSummaryLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What have you learnt in this session?"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+        android:id="@+id/sessionSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:minLines="10"
+        android:background="#00ffff"
+        app:layout_constraintTop_toBottomOf="@id/sessionSummaryLabel"/>
+
+    <TextView
+        android:id="@+id/planningLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What should I learn next?"
+        app:layout_constraintTop_toBottomOf="@id/sessionSummary"
+        android:layout_marginTop="16dp"/>
+
+    <EditText
+        android:id="@+id/planning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:minLines="10"
+        android:background="#00ffff"
+        app:layout_constraintTop_toBottomOf="@id/planningLabel"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Suggest New Topics"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
