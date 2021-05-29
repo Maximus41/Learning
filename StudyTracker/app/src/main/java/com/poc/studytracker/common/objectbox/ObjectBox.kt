@@ -2,7 +2,7 @@ package com.poc.studytracker.common.objectbox
 
 import android.content.Context
 import android.util.Log
-import com.poc.corea.models.MyObjectBox
+import com.poc.corea.models.session.MyObjectBox
 import com.poc.studytracker.BuildConfig
 import io.objectbox.BoxStore
 import io.objectbox.android.AndroidObjectBrowser

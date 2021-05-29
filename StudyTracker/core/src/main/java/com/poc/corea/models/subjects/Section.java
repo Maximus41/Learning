@@ -8,18 +8,19 @@ import io.objectbox.annotation.Unique;
 import io.objectbox.relation.ToMany;
 
 @Entity
-public class Page {
+public class Section {
     @Id
     public long obId;
-    public String sectionId;
+    public String subjectId;
     @Unique
-    private String pageId = UUID.randomUUID().toString();
-    public String pageTitle;
+    private String sectionId = UUID.randomUUID().toString();
+    public String sectionTitle;
     public long createdOn;
-    public float pageStoryPoints;
-    public ToMany<Para> paras;
+    public int noOfPages;
+    public float totalStoryPoints;
+    public ToMany<Page> pages;
 
-    public String getPageId() {
-        return pageId;
+    public String getSectionId() {
+        return sectionId;
     }
 }
