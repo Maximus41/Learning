@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.poc.corea.models.session.Session;
 import com.poc.studytracker.R;
 import com.poc.studytracker.common.adapter.OnItemClickListener;
 
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.SessionsViewHolder>{
-    private List<Session> mItems;
+    private List<String> mItems;
     public static final int EDIT_SESSION_BTN = 10;
     public static final int START_SESSION_BTN = 11;
     private OnItemClickListener mListener;
@@ -35,7 +34,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
 
     @Override
     public void onBindViewHolder(@NonNull SessionsViewHolder holder, int position) {
-        holder.sessionTitle.setText(mItems.get(position).getSessionTitle());
+        holder.sessionTitle.setText(mItems.get(position));
         holder.btnEditSession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,16 +54,16 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         return mItems.size();
     }
 
-    public void setmItems(List<Session> mItems) {
+    public void setmItems(List<String> mItems) {
         this.mItems = mItems;
         notifyDataSetChanged();
     }
 
-    public List<Session> getItems() {
+    public List<String> getItems() {
         return this.mItems;
     }
 
-    public Session getItem(int pos) {
+    public String getItem(int pos) {
         return this.mItems.get(pos);
     }
 

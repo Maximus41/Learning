@@ -1,12 +1,11 @@
 package com.poc.studytracker.subjects.models;
 
 
-import com.poc.corea.models.subjects.Page;
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter;
 
 public class SubjectPageModel implements BaseExpandableListAdapter.ExpandableListItem {
 
-    private Page page;
+//    private Page page;
 
     @Override
     public int getType() {
@@ -15,15 +14,15 @@ public class SubjectPageModel implements BaseExpandableListAdapter.ExpandableLis
 
     @Override
     public String getObjectId() {
-        return page.getPageId();
+        return "page.getPageId()";
     }
 
     @Override
     public String getParentObjectId() {
-        return page.getSectionId();
+        return "page.getSectionId()";
     }
 
-    public Page getPage() {
-        return page;
-    }
+//    public Page getPage() {
+//        return page;
+//    }
 }

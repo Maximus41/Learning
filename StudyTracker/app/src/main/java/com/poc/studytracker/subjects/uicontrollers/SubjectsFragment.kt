@@ -11,22 +11,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.poc.corea.models.session.Section
-import com.poc.corea.models.session.Session
-import com.poc.corea.models.session.Session_
-import com.poc.corea.models.subjects.Subject
-import com.poc.corea.models.subjects.SubjectSection
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.OnItemClickListener
-import com.poc.studytracker.common.objectbox.ObjectBox
 import com.poc.studytracker.databinding.FragmentSubjectsBinding
 import com.poc.studytracker.subjects.adapters.SubjectsAdapter
-import io.objectbox.rx.RxQuery
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
-import io.reactivex.functions.Predicate
-import io.reactivex.schedulers.Schedulers
-import java.util.*
 
 
 class SubjectsFragment : Fragment(), OnItemClickListener {
@@ -63,46 +51,18 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
     }
 
     private fun createSubject(subject: String) {
-        var sub = Subject()
-        sub.subjectId = UUID.randomUUID().toString()
-        sub.subjectTitle = subject
-        ObjectBox.store.boxFor(Subject::class.java).put(sub)
-        loadSubjects()
     }
 
     private fun loadSubjects() {
-        val query = ObjectBox.store.boxFor(Subject::class.java).query().build()
-        RxQuery.observable(query)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
-                subjectsAdapter.setmItems(it)
-                binding.subjectsList.adapter = subjectsAdapter
-            })
+
     }
 
     private fun countSessions(subjectId : String) {
-        val query = ObjectBox.store.boxFor(Session::class.java).query().equal(Session_.subjectId, subjectId).build()
-        RxQuery.observable(query)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    if(it.isEmpty())
-                        createFirstSession(subjectId)
-                    gotoSession(subjectId)
-                })
+
     }
 
     private fun createFirstSession(subjectId: String) : Long {
-        val session = Session()
-        session.sessionId = UUID.randomUUID().toString()
-        session.subjectId = subjectId
-        session.sessionCreatedOn = System.currentTimeMillis()
-        session.sessionTitle = "First Session"
-        session.sessionOrder = 1
-        session.sessionStoryPoints = 0
-        return ObjectBox.store.boxFor(Session::class.java).put(session)
+       return 0L;
     }
 
     private fun gotoSession(subjectId : String) {
@@ -113,13 +73,11 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
 
 
     override fun onItemClick(pos: Int) {
-        val item = subjectsAdapter.getItem(pos)
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos : Int) {
         when(identifier) {
             SubjectsAdapter.GOTO_SESSION_BTN -> {
-                countSessions(subjectsAdapter.getItem(pos).subjectId)
             }
             SubjectsAdapter.GOTO_SUMMARY_BTN -> {}
         }
