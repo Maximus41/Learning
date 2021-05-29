@@ -1,0 +1,632 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:143493352725888597",
+      "lastPropertyId": "9:3308820766876778304",
+      "name": "Session",
+      "properties": [
+        {
+          "id": "1:5630845020051381641",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2398140111197685645",
+          "name": "subjectId",
+          "type": 9
+        },
+        {
+          "id": "3:4010728916493514416",
+          "name": "sessionId",
+          "indexId": "1:348466478970211220",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:6217636608797150459",
+          "name": "sessionTitle",
+          "type": 9
+        },
+        {
+          "id": "5:8463712013604866108",
+          "name": "sessionSerialNo",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "6:8238413474935466049",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "7:4666681306286786767",
+          "name": "startedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "8:441291827545728706",
+          "name": "expiresOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "9:3308820766876778304",
+          "name": "endedOn",
+          "type": 6,
+          "flags": 4
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:5195177902974556500",
+      "lastPropertyId": "9:5331864059079189065",
+      "name": "SessionTopic",
+      "properties": [
+        {
+          "id": "1:2501076032783593986",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5269606945401485586",
+          "name": "sessionId",
+          "type": 9
+        },
+        {
+          "id": "3:8240495855348444454",
+          "name": "topicId",
+          "indexId": "2:4166132209713348737",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:606389949081750065",
+          "name": "sectionId",
+          "type": 9
+        },
+        {
+          "id": "5:9088831570168126070",
+          "name": "firstPageId",
+          "type": 9
+        },
+        {
+          "id": "6:5337433418146114115",
+          "name": "secondPageId",
+          "type": 9
+        },
+        {
+          "id": "7:1130598511225893209",
+          "name": "firstPageStoryPoints",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "8:1808661163608102792",
+          "name": "secondPageStoryPoints",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "9:5331864059079189065",
+          "name": "topicStoryPoints",
+          "type": 7,
+          "flags": 4
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:5933135958306846846",
+      "lastPropertyId": "19:769947822198337026",
+      "name": "PageWiseSessionSummary",
+      "properties": [
+        {
+          "id": "1:5359615088009031012",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:527644728610118334",
+          "name": "summaryId",
+          "type": 9
+        },
+        {
+          "id": "3:5688504265025527505",
+          "name": "pageId",
+          "type": 9
+        },
+        {
+          "id": "4:330930198408056381",
+          "name": "pageSummaryId",
+          "indexId": "3:3135948484652852462",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "5:8635692777526893970",
+          "name": "readStatus",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "6:8117269011270277518",
+          "name": "readStatusRecordedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "7:1922885037011867780",
+          "name": "notesTakenStatus",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "8:4660495373454092729",
+          "name": "notesStatusRecordedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "9:1064717228476869022",
+          "name": "memorizedStatus",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "10:5533076896899162951",
+          "name": "memorizedStatusRecordedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "11:4424375429336050007",
+          "name": "reviewCount",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "12:1384861607300503474",
+          "name": "lastReviewedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "13:6892887674508716043",
+          "name": "practiceCount",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "14:3838486446312439574",
+          "name": "lastPracticedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "15:8970758656141039526",
+          "name": "totalStoryPoints",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "16:6669044413380876072",
+          "name": "totalStoryPointsCovered",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "17:2657131300844567342",
+          "name": "readSessionNo",
+          "type": 9
+        },
+        {
+          "id": "18:2088982522532478277",
+          "name": "notesTakenSessionNo",
+          "type": 9
+        },
+        {
+          "id": "19:769947822198337026",
+          "name": "memorizedSessionNo",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:5848340221573108067",
+      "lastPropertyId": "7:3422658341993443261",
+      "name": "SectionWiseSessionSummary",
+      "properties": [
+        {
+          "id": "1:2523498308549509625",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5369276293842203833",
+          "name": "summaryId",
+          "type": 9
+        },
+        {
+          "id": "3:1268757788387322203",
+          "name": "sectionSummaryId",
+          "indexId": "4:4534766268103877058",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:3810304934009493786",
+          "name": "sectionId",
+          "type": 9
+        },
+        {
+          "id": "5:2384563640487613834",
+          "name": "sectionStoryPoints",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "6:6876783610643685146",
+          "name": "sectionStoryPointsCovered",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "7:3422658341993443261",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:3577355819429649916",
+      "lastPropertyId": "6:6158620340712107860",
+      "name": "SessionSummary",
+      "properties": [
+        {
+          "id": "1:2495068383588772296",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3253648940612089095",
+          "name": "sessionId",
+          "type": 9
+        },
+        {
+          "id": "3:389540036834018726",
+          "name": "summaryId",
+          "indexId": "5:4962480527589656781",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:3305098770134124362",
+          "name": "totalStoryPoints",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "5:8453176347857524377",
+          "name": "totalStoryPointsCovered",
+          "type": 7,
+          "flags": 4
+        },
+        {
+          "id": "6:6158620340712107860",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:5789190205711751637",
+      "lastPropertyId": "6:3195725480475632720",
+      "name": "Page",
+      "properties": [
+        {
+          "id": "1:3537617049738287251",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1535611746058430324",
+          "name": "sectionId",
+          "type": 9
+        },
+        {
+          "id": "3:3901441791027999344",
+          "name": "pageId",
+          "indexId": "6:576210146431950329",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:2534773473633654932",
+          "name": "pageTitle",
+          "type": 9
+        },
+        {
+          "id": "5:4644715674897859904",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "6:3195725480475632720",
+          "name": "pageStoryPoints",
+          "type": 7,
+          "flags": 4
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:5264997423529392095",
+          "name": "paras",
+          "targetId": "8:5646499615711450930"
+        }
+      ]
+    },
+    {
+      "id": "7:2127046740522017213",
+      "lastPropertyId": "14:7786207958843060711",
+      "name": "PageCumulativeProgress",
+      "properties": [
+        {
+          "id": "1:7945262275593275929",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8324515500978993801",
+          "name": "pageId",
+          "type": 9
+        },
+        {
+          "id": "3:1795779152555203527",
+          "name": "progressId",
+          "indexId": "7:1028560525581226152",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:6748188204188824703",
+          "name": "readStatus",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "5:7223299217377237007",
+          "name": "readStatusRecordedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "6:2789373739589942911",
+          "name": "notesTakenStatus",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "7:9194114562106375601",
+          "name": "notesStatusRecordedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "8:5012669650181720625",
+          "name": "memorizedStatus",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "9:5857181067951423663",
+          "name": "memorizedStatusRecordedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "10:6941821045459199384",
+          "name": "reviewCount",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "11:1398652830115706810",
+          "name": "lastReviewedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "12:5648020280634608139",
+          "name": "practiceCount",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "13:7226616136708223493",
+          "name": "lastPracticedOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "14:7786207958843060711",
+          "name": "totalStoryPointsCovered",
+          "type": 7,
+          "flags": 4
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:5646499615711450930",
+      "lastPropertyId": "6:7993421720301314501",
+      "name": "Para",
+      "properties": [
+        {
+          "id": "1:338148577220401787",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:124867624588041700",
+          "name": "pageId",
+          "type": 9
+        },
+        {
+          "id": "3:5376096045638344424",
+          "name": "paraId",
+          "indexId": "8:5617922264070424452",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:1929192858558688338",
+          "name": "paraTitle",
+          "type": 9
+        },
+        {
+          "id": "5:8702538029794493715",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "6:7993421720301314501",
+          "name": "storyPoint",
+          "type": 7,
+          "flags": 4
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "9:6708991634148922891",
+      "lastPropertyId": "7:626384516317973579",
+      "name": "Section",
+      "properties": [
+        {
+          "id": "1:2672901892043873323",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:267203153862805486",
+          "name": "subjectId",
+          "type": 9
+        },
+        {
+          "id": "3:4372784751789646157",
+          "name": "sectionId",
+          "indexId": "9:7627190331578258647",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:5460368712055029462",
+          "name": "sectionTitle",
+          "type": 9
+        },
+        {
+          "id": "5:7888098225740145692",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "6:4329497779095491555",
+          "name": "noOfPages",
+          "type": 5,
+          "flags": 4
+        },
+        {
+          "id": "7:626384516317973579",
+          "name": "totalStoryPoints",
+          "type": 7,
+          "flags": 4
+        }
+      ],
+      "relations": [
+        {
+          "id": "2:8921817942700096791",
+          "name": "pages",
+          "targetId": "6:5789190205711751637"
+        }
+      ]
+    },
+    {
+      "id": "10:6325609687292582424",
+      "lastPropertyId": "5:2256132943562868524",
+      "name": "Subject",
+      "properties": [
+        {
+          "id": "1:6831889947362968103",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8411073731816102712",
+          "name": "subjectId",
+          "indexId": "10:224804474244248661",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:7805441219516813586",
+          "name": "subjectTitle",
+          "type": 9
+        },
+        {
+          "id": "4:2930815613320006555",
+          "name": "createdOn",
+          "type": 6,
+          "flags": 4
+        },
+        {
+          "id": "5:2256132943562868524",
+          "name": "nosOfSections",
+          "type": 5,
+          "flags": 4
+        }
+      ],
+      "relations": [
+        {
+          "id": "3:1815722012373608687",
+          "name": "sections",
+          "targetId": "9:6708991634148922891"
+        }
+      ]
+    }
+  ],
+  "lastEntityId": "10:6325609687292582424",
+  "lastIndexId": "10:224804474244248661",
+  "lastRelationId": "3:1815722012373608687",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
