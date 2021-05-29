@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.poc.corea.models.subjects.Subject;
 import com.poc.studytracker.R;
 import com.poc.studytracker.common.adapter.OnItemClickListener;
 
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.SubjectsViewHolder>{
 
-    private List<Subject> mItems;
+    private List<String> mItems;
     public static final int GOTO_SESSION_BTN = 7;
     public static final int GOTO_SUMMARY_BTN = 9;
     private OnItemClickListener mListener;
@@ -36,7 +35,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
 
     @Override
     public void onBindViewHolder(@NonNull SubjectsViewHolder holder, int position) {
-        holder.subjectTitle.setText(mItems.get(position).subjectTitle);
+        holder.subjectTitle.setText(mItems.get(position));
         holder.btnGotoSession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,16 +49,16 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
         return mItems.size();
     }
 
-    public void setmItems(List<Subject> mItems) {
+    public void setmItems(List<String> mItems) {
         this.mItems = mItems;
         notifyDataSetChanged();
     }
 
-    public List<Subject> getItems() {
+    public List<String> getItems() {
         return this.mItems;
     }
 
-    public Subject getItem(int pos) {
+    public String getItem(int pos) {
        return this.mItems.get(pos);
     }
 

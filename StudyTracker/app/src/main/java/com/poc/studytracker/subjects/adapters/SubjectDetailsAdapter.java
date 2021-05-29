@@ -62,7 +62,7 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
                 } else {
                     pageDetailsViewHolder.itemView.setVisibility(View.VISIBLE);
                 }
-                    pageDetailsViewHolder.pageTitleTv.setText(subjectPageModel.getPage().getPageTitle());
+//                    pageDetailsViewHolder.pageTitleTv.setText(subjectPageModel.getPage().getPageTitle());
                 break;
         }
     }

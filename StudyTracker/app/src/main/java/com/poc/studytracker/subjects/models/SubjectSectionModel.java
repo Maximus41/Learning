@@ -1,15 +1,14 @@
 package com.poc.studytracker.subjects.models;
 
-import com.poc.corea.models.subjects.SubjectSection;
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter;
 
 public class SubjectSectionModel implements BaseExpandableListAdapter.ExpandableListItem {
 
-    private SubjectSection subjectSection;
+//    private SubjectSection subjectSection;
 
-    public SubjectSectionModel(SubjectSection subjectSection) {
-        this.subjectSection = subjectSection;
-    }
+//    public SubjectSectionModel(SubjectSection subjectSection) {
+//        this.subjectSection = subjectSection;
+//    }
 
     @Override
     public int getType() {
@@ -18,7 +17,7 @@ public class SubjectSectionModel implements BaseExpandableListAdapter.Expandable
 
     @Override
     public String getObjectId() {
-        return subjectSection.getSectionId();
+        return "subjectSection.getSectionId()";
     }
 
     @Override
@@ -27,6 +26,6 @@ public class SubjectSectionModel implements BaseExpandableListAdapter.Expandable
     }
 
     public String getSectionTitle() {
-        return subjectSection.getSectionName();
+        return "subjectSection.getSectionName()";
     }
 }
