@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.poc.corea.models.subjects.Subject;
 import com.poc.studytracker.R;
 import com.poc.studytracker.common.adapter.OnItemClickListener;
 
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.SubjectsViewHolder>{
 
-    private List<String> mItems;
+    private List<Subject> mItems;
     public static final int GOTO_SESSION_BTN = 7;
     public static final int GOTO_SUMMARY_BTN = 9;
     private OnItemClickListener mListener;
@@ -30,18 +31,17 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     @NonNull
     @Override
     public SubjectsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new SubjectsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_subject_list_item, null));
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_subject_list_item, null);
+        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        view.setLayoutParams(lp);
+        return new SubjectsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SubjectsViewHolder holder, int position) {
-        holder.subjectTitle.setText(mItems.get(position));
-        holder.btnGotoSession.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onButtonClickOnItem(GOTO_SESSION_BTN, position);
-            }
-        });
+        holder.subjectTitle.setText(mItems.get(position).subjectTitle);
+        holder.btnGotoSession.setOnClickListener(v -> mListener.onButtonClickOnItem(GOTO_SESSION_BTN, position));
+        holder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
     }
 
     @Override
@@ -49,16 +49,16 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
         return mItems.size();
     }
 
-    public void setmItems(List<String> mItems) {
+    public void setmItems(List<Subject> mItems) {
         this.mItems = mItems;
         notifyDataSetChanged();
     }
 
-    public List<String> getItems() {
+    public List<Subject> getItems() {
         return this.mItems;
     }
 
-    public String getItem(int pos) {
+    public Subject getItem(int pos) {
        return this.mItems.get(pos);
     }
 

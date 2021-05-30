@@ -11,10 +11,18 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.poc.corea.models.session.Session
+import com.poc.corea.models.session.Session_
+import com.poc.corea.models.subjects.Subject
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.OnItemClickListener
+import com.poc.studytracker.common.objectbox.ObjectBox
 import com.poc.studytracker.databinding.FragmentSubjectsBinding
 import com.poc.studytracker.subjects.adapters.SubjectsAdapter
+import io.objectbox.rx.RxQuery
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.schedulers.Schedulers
 
 
 class SubjectsFragment : Fragment(), OnItemClickListener {
@@ -39,9 +47,9 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         binding.createSubjectBtn.setOnClickListener(View.OnClickListener {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_subject, null)
             val dialog = AlertDialog.Builder(activity).setView(dialogView).create()
-            val subject = dialogView.findViewById<EditText>(R.id.etCreateSubject).editableText.toString()
+            val subject = dialogView.findViewById<EditText>(R.id.etCreateSubject)
             dialogView.findViewById<Button>(R.id.btnCreate).setOnClickListener(View.OnClickListener {
-                createSubject(subject)
+                createSubject(subject.editableText.toString())
                 dialog.dismiss()
             })
             dialog.show()
@@ -51,18 +59,43 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
     }
 
     private fun createSubject(subject: String) {
+        val sub = Subject()
+        sub.subjectTitle = subject
+        sub.createdOn = System.currentTimeMillis()
+        ObjectBox.store.boxFor(Subject::class.java).put(sub)
+        loadSubjects()
     }
 
     private fun loadSubjects() {
-
+        val disposable = RxQuery.single(ObjectBox.store.boxFor(Subject::class.java).query().build())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer {
+                    subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
+                    subjectsAdapter.setmItems(it)
+                    binding.subjectsList.adapter = subjectsAdapter
+                })
     }
 
-    private fun countSessions(subjectId : String) {
-
+    private fun countSessions(pos : Int) {
+        val item : Subject = subjectsAdapter.getItem(pos)
+        val disposable = RxQuery.single(ObjectBox.store.boxFor(Session::class.java).query().equal(Session_.subjectId, item.subjectId).build())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer {
+                    if(it == null || it.isEmpty())
+                        createFirstSession(item.subjectId)
+                    gotoSession(item.subjectId)
+                })
     }
 
     private fun createFirstSession(subjectId: String) : Long {
-       return 0L;
+        val session = Session()
+        session.subjectId = subjectId
+        session.createdOn = System.currentTimeMillis()
+        session.sessionSerialNo = 1
+        session.sessionTitle = "First Session"
+       return ObjectBox.store.boxFor(Session::class.java).put(session);
     }
 
     private fun gotoSession(subjectId : String) {
@@ -73,11 +106,15 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
 
 
     override fun onItemClick(pos: Int) {
+        val bundle = Bundle()
+        bundle.putString("subject_id", subjectsAdapter.getItem(pos).subjectId)
+        NavHostFragment.findNavController(this).navigate(R.id.subjectDetailsFragment, bundle)
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos : Int) {
         when(identifier) {
             SubjectsAdapter.GOTO_SESSION_BTN -> {
+                countSessions(pos)
             }
             SubjectsAdapter.GOTO_SUMMARY_BTN -> {}
         }

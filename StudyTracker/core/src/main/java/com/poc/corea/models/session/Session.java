@@ -5,6 +5,7 @@ import java.util.UUID;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Unique;
+import io.objectbox.relation.ToMany;
 
 @Entity
 public class Session {
@@ -19,6 +20,10 @@ public class Session {
     public long startedOn;
     public long expiresOn;
     public long endedOn;
+    public boolean hasSessionExpired;
+    public boolean hasSessionEnded;
+    public boolean isSessionActive;
+    public ToMany<SessionTopic> topics;
 
     public String getSessionId() {
         return sessionId;

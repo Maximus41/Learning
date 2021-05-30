@@ -1,18 +1,18 @@
-package com.poc.studytracker.subjects.models;
-
+package com.poc.studytracker.sessions.models;
 
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter;
 
-public class SubjectPageModel implements BaseExpandableListAdapter.ExpandableListItem {
-
+public class UpdateTopicPageModel implements BaseExpandableListAdapter.ExpandableListItem {
     private String sectionId;
     private String pageTitle;
     private String pageId;
+
     private boolean isRead;
     private boolean isNotesTaken;
     private boolean isMemorized;
     private int reviewCount;
     private int practiceCount;
+    private boolean actionsFreezed;
 
     @Override
     public int getType() {
@@ -45,14 +45,6 @@ public class SubjectPageModel implements BaseExpandableListAdapter.ExpandableLis
         this.pageId = pageId;
     }
 
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public void setRead(boolean read) {
-        isRead = read;
-    }
-
     public boolean isNotesTaken() {
         return isNotesTaken;
     }
@@ -83,5 +75,21 @@ public class SubjectPageModel implements BaseExpandableListAdapter.ExpandableLis
 
     public void setPracticeCount(int practiceCount) {
         this.practiceCount = practiceCount;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+
+    public boolean isActionsFreezed() {
+        return actionsFreezed;
+    }
+
+    public void setActionsFreezed(boolean actionsFreezed) {
+        this.actionsFreezed = actionsFreezed;
     }
 }
