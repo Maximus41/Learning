@@ -11,7 +11,18 @@
         android:label="SubjectsFragment" />
     <fragment
         android:id="@+id/sessionsFragment"
-        android:name="com.poc.studytracker.SessionsFragment"
-        android:label="fragment_sessions"
-        tools:layout="@layout/fragment_sessions" />
+        android:name="com.poc.studytracker.sessions.uicontrollers.SessionsFragment"
+        android:label="SessionsFragment" />
+    <fragment
+        android:id="@+id/editSessionFragment"
+        android:name="com.poc.studytracker.sessions.uicontrollers.EditSessionFragment"
+        android:label="EditSessionFragment" />
+    <fragment
+        android:id="@+id/updateSessionFragment"
+        android:name="com.poc.studytracker.sessions.uicontrollers.UpdateSessionFragment"
+        android:label="UpdateSessionFragment" />
+    <fragment
+        android:id="@+id/subjectDetailsFragment"
+        android:name="com.poc.studytracker.subjects.uicontrollers.SubjectDetailsFragment"
+        android:label="SubjectDetailsFragment" />
 </navigation>

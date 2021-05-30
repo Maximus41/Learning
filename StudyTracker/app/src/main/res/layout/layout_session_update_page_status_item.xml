@@ -18,43 +18,43 @@
             android:text="page"
             android:layout_weight="5"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/readStatusUpdateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="R"
+            android:src="@drawable/read_selector"
             android:layout_weight="1"
             android:layout_margin="1dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/notesTakenUpdateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="N"
+            android:src="@drawable/notes_selector"
             android:layout_weight="1"
             android:layout_margin="1dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/memorizedNoteUpdateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="M"
+            android:src="@drawable/memorized_selector"
             android:layout_weight="1"
             android:layout_margin="1dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/reviewButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="R"
+            android:src="@drawable/review_selector"
             android:layout_weight="1"
             android:layout_margin="1dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/practiceButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="P"
+            android:src="@drawable/practice_selector"
             android:layout_weight="1"
             android:layout_margin="1dp"/>
     </LinearLayout>

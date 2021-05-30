@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.poc.studytracker">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Required to run keep-alive service when targeting API 28 or higher -->
@@ -14,8 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudyTracker">
         <activity android:name=".common.uicontrollers.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

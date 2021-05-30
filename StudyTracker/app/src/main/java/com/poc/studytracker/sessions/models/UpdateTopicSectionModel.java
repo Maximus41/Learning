@@ -1,12 +1,10 @@
-package com.poc.studytracker.subjects.models;
+package com.poc.studytracker.sessions.models;
 
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter;
 
-public class SubjectSectionModel implements BaseExpandableListAdapter.ExpandableListItem {
-
+public class UpdateTopicSectionModel implements BaseExpandableListAdapter.ExpandableListItem {
     private String sectionTitle;
     private String sectionId;
-    private float sectionProgressPercent;
 
     @Override
     public int getType() {
@@ -33,13 +31,5 @@ public class SubjectSectionModel implements BaseExpandableListAdapter.Expandable
 
     public void setSectionId(String sectionId) {
         this.sectionId = sectionId;
-    }
-
-    public float getSectionProgressPercent() {
-        return sectionProgressPercent;
-    }
-
-    public void setSectionProgressPercent(float sectionProgressPercent) {
-        this.sectionProgressPercent = sectionProgressPercent;
     }
 }
