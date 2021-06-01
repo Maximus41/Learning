@@ -1,60 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:orientation="horizontal"
-    android:weightSum="10">
+    android:layout_height="wrap_content"
+    android:elevation="0dp">
 
-    <TextView
-        android:id="@+id/pageTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="page"
-        android:layout_weight="5"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:weightSum="10">
 
-    <ImageView
-        android:id="@+id/imgReadStatus"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/read_selector"
-        android:layout_weight="1"
-        android:layout_margin="1dp"/>
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="page"
+            android:layout_weight="5"/>
 
-    <ImageView
-        android:id="@+id/imgNotesStatus"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/notes_selector"
-        android:layout_weight="1"
-        android:layout_margin="1dp"/>
+        <ImageView
+            android:id="@+id/imgReadStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/read_selector"
+            android:layout_weight="1"
+            android:layout_margin="1dp"/>
 
-    <ImageView
-        android:id="@+id/imgMemorizeStatus"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/memorized_selector"
-        android:layout_weight="1"
-        android:layout_margin="1dp"/>
+        <ImageView
+            android:id="@+id/imgNotesStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/notes_selector"
+            android:layout_weight="1"
+            android:layout_margin="1dp"/>
 
-    <ImageView
-        android:id="@+id/imgReviewStatus"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/review_selector"
-        android:layout_weight="1"
-        android:layout_margin="1dp"/>
+        <ImageView
+            android:id="@+id/imgMemorizeStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/memorized_selector"
+            android:layout_weight="1"
+            android:layout_margin="1dp"/>
 
-    <ImageView
-        android:id="@+id/imgPracticeStatus"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/practice_selector"
-        android:layout_weight="1"
-        android:layout_margin="1dp"/>
-</LinearLayout>
+        <ImageView
+            android:id="@+id/imgReviewStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/review_selector"
+            android:layout_weight="1"
+            android:layout_margin="1dp"/>
 
+        <ImageView
+            android:id="@+id/imgPracticeStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/practice_selector"
+            android:layout_weight="1"
+            android:layout_margin="1dp"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

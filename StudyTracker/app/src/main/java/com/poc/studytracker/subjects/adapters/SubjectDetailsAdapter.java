@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,7 +59,7 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
                 SubjectSectionDetailsViewHolder sectionDetailsViewHolder = (SubjectSectionDetailsViewHolder) holder;
                 sectionDetailsViewHolder.expandButton.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 sectionDetailsViewHolder.sectionTitleTv.setText(subjectSectionModel.getSectionTitle());
-                sectionDetailsViewHolder.sectionProgressPercent.setText(subjectSectionModel.getSectionProgressPercent() + "% Completed");
+                sectionDetailsViewHolder.sectionProgressPercent.setText(subjectSectionModel.getSectionProgressPercent() + "% Done");
                 break;
             case CHILD_TYPE:
                 SubjectPageModel subjectPageModel = (SubjectPageModel) listItem;
@@ -89,7 +90,7 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
 
     public static class SubjectSectionDetailsViewHolder extends RecyclerView.ViewHolder {
 
-        Button expandButton;
+        ImageButton expandButton;
         TextView sectionTitleTv;
         TextView sectionProgressPercent;
 

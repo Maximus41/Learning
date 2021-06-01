@@ -10,12 +10,14 @@
         android:id="@+id/para1"
         android:layout_width="match_parent"
         android:layout_height="36dp"
+        android:inputType="textCapSentences"
         android:hint="Paragraph 1"/>
 
     <EditText
         android:id="@+id/para2"
         android:layout_width="match_parent"
         android:layout_height="36dp"
+        android:inputType="textCapSentences"
         android:hint="Paragraph 2"
         android:layout_marginTop="8dp"/>
 
@@ -23,6 +25,7 @@
         android:id="@+id/para3"
         android:layout_width="match_parent"
         android:layout_height="36dp"
+        android:inputType="textCapSentences"
         android:hint="Paragraph 3"
         android:layout_marginTop="8dp"/>
 
@@ -30,6 +33,7 @@
         android:id="@+id/para4"
         android:layout_width="match_parent"
         android:layout_height="36dp"
+        android:inputType="textCapSentences"
         android:hint="Paragraph 4"
         android:layout_marginTop="8dp"/>
 
@@ -37,6 +41,7 @@
         android:id="@+id/para5"
         android:layout_width="match_parent"
         android:layout_height="36dp"
+        android:inputType="textCapSentences"
         android:hint="Paragraph 5"
         android:layout_marginTop="8dp"/>
 

@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
@@ -16,7 +18,9 @@ import com.poc.corea.models.session.Session_
 import com.poc.corea.models.subjects.Subject
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.OnItemClickListener
+import com.poc.studytracker.common.adapter.VerticalSpacingItemDecoration
 import com.poc.studytracker.common.objectbox.ObjectBox
+import com.poc.studytracker.common.uicontrollers.MainActivity
 import com.poc.studytracker.databinding.FragmentSubjectsBinding
 import com.poc.studytracker.subjects.adapters.SubjectsAdapter
 import io.objectbox.rx.RxQuery
@@ -41,8 +45,8 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.subjectsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.subjectsList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_3)!!))
         binding.subjectsList.adapter = SubjectsAdapter(this)
         binding.createSubjectBtn.setOnClickListener(View.OnClickListener {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_subject, null)
@@ -56,6 +60,12 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         })
 
         loadSubjects()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val myactivity = activity as MainActivity
+        myactivity.setTitle("Subjects")
     }
 
     private fun createSubject(subject: String) {
@@ -108,6 +118,7 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
     override fun onItemClick(pos: Int) {
         val bundle = Bundle()
         bundle.putString("subject_id", subjectsAdapter.getItem(pos).subjectId)
+        bundle.putString("subject_name", subjectsAdapter.getItem(pos).subjectTitle)
         NavHostFragment.findNavController(this).navigate(R.id.subjectDetailsFragment, bundle)
     }
 

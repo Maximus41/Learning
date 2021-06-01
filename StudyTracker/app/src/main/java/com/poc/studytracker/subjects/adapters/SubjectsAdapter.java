@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -65,7 +66,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     public static class SubjectsViewHolder extends RecyclerView.ViewHolder {
 
         TextView subjectTitle;
-        Button btnGotoSession;
+        ImageButton btnGotoSession;
         Button btnGotoSummary;
 
         public SubjectsViewHolder(@NonNull View itemView) {

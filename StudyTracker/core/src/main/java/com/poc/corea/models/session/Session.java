@@ -23,6 +23,7 @@ public class Session {
     public boolean hasSessionExpired;
     public boolean hasSessionEnded;
     public boolean isSessionActive;
+    public boolean isSessionAssessed;
     public ToMany<SessionTopic> topics;
 
     public String getSessionId() {

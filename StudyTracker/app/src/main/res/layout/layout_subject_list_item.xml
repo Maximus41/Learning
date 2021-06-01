@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    android:elevation="5dp">
 
-    <TextView
-        android:id="@+id/subjectTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="Subject"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
+        <TextView
+            android:id="@+id/subjectTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Subject"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <Button
-        android:id="@+id/btnGotoSessions"
-        android:layout_width="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/btnGotoSummary"
-        android:layout_height="match_parent"
-        android:text="Sessions"
-        android:layout_margin="5dp"/>
+        <ImageButton
+            android:id="@+id/btnGotoSessions"
+            android:layout_width="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/btnGotoSummary"
+            android:layout_height="match_parent"
+            android:src="@drawable/session_selector"
+            android:background="@android:color/transparent"
+            android:padding="8dp"/>
 
-    <Button
-        android:id="@+id/btnGotoSummary"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="Summary"
-        android:layout_margin="5dp"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/btnGotoSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Summary"
+            android:layout_margin="5dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

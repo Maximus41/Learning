@@ -8,6 +8,7 @@ public class TopicPageModel implements BaseExpandableListAdapter.ExpandableListI
     private String pageTitle;
     private String pageId;
     private String paraformattedContent;
+    private String sessionTopicId;
 
     @Override
     public int getType() {
@@ -46,5 +47,13 @@ public class TopicPageModel implements BaseExpandableListAdapter.ExpandableListI
 
     public void setParaformattedContent(String paraformattedContent) {
         this.paraformattedContent = paraformattedContent;
+    }
+
+    public String getSessionTopicId() {
+        return sessionTopicId;
+    }
+
+    public void setSessionTopicId(String sessionTopicId) {
+        this.sessionTopicId = sessionTopicId;
     }
 }

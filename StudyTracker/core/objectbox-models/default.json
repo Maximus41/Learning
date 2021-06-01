@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:143493352725888597",
-      "lastPropertyId": "12:2282440792848703994",
+      "lastPropertyId": "13:2328927096951417782",
       "name": "Session",
       "properties": [
         {
@@ -76,6 +76,12 @@
         {
           "id": "12:2282440792848703994",
           "name": "isSessionActive",
+          "type": 1,
+          "flags": 4
+        },
+        {
+          "id": "13:2328927096951417782",
+          "name": "isSessionAssessed",
           "type": 1,
           "flags": 4
         }
@@ -669,10 +675,46 @@
           "targetId": "9:6708991634148922891"
         }
       ]
+    },
+    {
+      "id": "11:311134298017441292",
+      "lastPropertyId": "5:4465480188595396775",
+      "name": "SessionAssessment",
+      "properties": [
+        {
+          "id": "1:5487204211292327741",
+          "name": "obId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:647128490745104104",
+          "name": "sessionId",
+          "type": 9
+        },
+        {
+          "id": "3:5013438374306924138",
+          "name": "assessmentId",
+          "indexId": "12:7950421752599767193",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:8823174493428262618",
+          "name": "sessionSummary",
+          "type": 9
+        },
+        {
+          "id": "5:4465480188595396775",
+          "name": "nextSessionPlan",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "10:6325609687292582424",
-  "lastIndexId": "11:7950562560372735501",
+  "lastEntityId": "11:311134298017441292",
+  "lastIndexId": "12:7950421752599767193",
   "lastRelationId": "4:2659101992335128755",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

@@ -6,7 +6,7 @@ public class SubjectSectionModel implements BaseExpandableListAdapter.Expandable
 
     private String sectionTitle;
     private String sectionId;
-    private float sectionProgressPercent;
+    private int sectionProgressPercent;
 
     @Override
     public int getType() {
@@ -35,11 +35,11 @@ public class SubjectSectionModel implements BaseExpandableListAdapter.Expandable
         this.sectionId = sectionId;
     }
 
-    public float getSectionProgressPercent() {
+    public int getSectionProgressPercent() {
         return sectionProgressPercent;
     }
 
-    public void setSectionProgressPercent(float sectionProgressPercent) {
+    public void setSectionProgressPercent(int sectionProgressPercent) {
         this.sectionProgressPercent = sectionProgressPercent;
     }
 }
