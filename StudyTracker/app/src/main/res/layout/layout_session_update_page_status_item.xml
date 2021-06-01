@@ -52,23 +52,65 @@
                 android:layout_weight="1"
                 android:layout_margin="1dp"/>
 
-            <ImageButton
-                android:id="@+id/reviewButton"
+            <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/review_selector"
-                android:background="@android:color/transparent"
-                android:layout_weight="1"
-                android:layout_margin="1dp"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
-            <ImageButton
-                android:id="@+id/practiceButton"
+                <ImageButton
+                    android:id="@+id/reviewButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/review_selector"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:layout_margin="1dp"/>
+
+                <TextView
+                    android:id="@+id/reviewCount"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/counter_badge"
+                    android:layout_gravity="top|right"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:textSize="8sp"
+                    android:visibility="gone"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="2dp"/>
+
+            </FrameLayout>
+
+            <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/practice_selector"
-                android:background="@android:color/transparent"
-                android:layout_weight="1"
-                android:layout_margin="1dp"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/practiceButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/practice_selector"
+                    android:background="@android:color/transparent"
+                    android:layout_margin="1dp"/>
+
+                <TextView
+                    android:id="@+id/practiceCount"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/counter_badge"
+                    android:layout_gravity="top|right"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:textSize="8sp"
+                    android:visibility="gone"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="2dp"/>
+
+            </FrameLayout>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

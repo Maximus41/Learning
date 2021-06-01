@@ -149,7 +149,7 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                     progress.lastReviewedOn = System.currentTimeMillis()
                     progress.totalStoryPointsCovered += (pageStoryPoints * 0.2f) / GlobalConstants.MINIMUM_REVIEW_COUNT  //20% effort
                 } else {
-                    Toast.makeText(context, "Exhausted Review Counts", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Exhausted Review Counts", Toast.LENGTH_SHORT).show()
                 }
             }
             UpdateSessionAdapter.ACTION_PRACTICE -> {
@@ -158,7 +158,7 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                     progress.lastPracticedOn = System.currentTimeMillis()
                     progress.totalStoryPointsCovered += (pageStoryPoints * 0.35f) / GlobalConstants.MINIMUM_PRACTICE_COUNT //35% effort
                 } else {
-                    Toast.makeText(context, "Exhausted Practice Counts", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Exhausted Practice Counts", Toast.LENGTH_SHORT).show()
                 }
             }
         }

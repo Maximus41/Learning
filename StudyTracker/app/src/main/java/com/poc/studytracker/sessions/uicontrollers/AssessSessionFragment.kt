@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -276,10 +277,10 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
     }
 
     private fun validateAssessment(): Boolean {
-        if(TextUtils.isEmpty(binding.sessionSummary.contentAsHTML))
+        if(TextUtils.isEmpty(binding.sessionSummary.contentAsHTML) || TextUtils.isEmpty(binding.planning.contentAsHTML)) {
+            Toast.makeText(context, "Session summary/planning cannot be empty", Toast.LENGTH_SHORT).show()
             return false
-        if(TextUtils.isEmpty(binding.planning.contentAsHTML))
-            return false
+        }
         return true
     }
 

@@ -70,6 +70,10 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
                 pageDetailsViewHolder.memorizedStatus.setSelected(subjectPageModel.isMemorized());
                 pageDetailsViewHolder.reviewStatus.setSelected(subjectPageModel.getReviewCount() > 0);
                 pageDetailsViewHolder.practiceStatus.setSelected(subjectPageModel.getPracticeCount() > 0);
+                pageDetailsViewHolder.practiceCount.setVisibility(subjectPageModel.getPracticeCount() > 0 ? View.VISIBLE : View.GONE);
+                pageDetailsViewHolder.reviewCount.setVisibility(subjectPageModel.getReviewCount() > 0 ? View.VISIBLE : View.GONE);
+                pageDetailsViewHolder.reviewCount.setText(String.valueOf(subjectPageModel.getReviewCount()));
+                pageDetailsViewHolder.practiceCount.setText(String.valueOf(subjectPageModel.getPracticeCount()));
                 break;
         }
     }
@@ -110,6 +114,8 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
         ImageView memorizedStatus;
         ImageView reviewStatus;
         ImageView practiceStatus;
+        TextView reviewCount;
+        TextView practiceCount;
 
         public SubjectPageDetailsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -119,6 +125,8 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
             notesStatus = itemView.findViewById(R.id.imgNotesStatus);
             practiceStatus = itemView.findViewById(R.id.imgPracticeStatus);
             reviewStatus = itemView.findViewById(R.id.imgReviewStatus);
+            practiceCount = itemView.findViewById(R.id.practiceCount);
+            reviewCount = itemView.findViewById(R.id.reviewCount);
         }
     }
 }
