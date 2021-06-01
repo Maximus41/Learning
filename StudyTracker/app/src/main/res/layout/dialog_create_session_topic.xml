@@ -6,14 +6,14 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/topicSectionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Enter Chapter Name"/>
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/topicFirstPageTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         android:hint="Enter 1st Topic Name"
         android:layout_marginTop="8dp"/>
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/topicSecondPageTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

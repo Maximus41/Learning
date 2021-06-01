@@ -42,7 +42,7 @@ class SubjectDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val myactivity = activity as MainActivity
-        myactivity.setTitle(arguments?.getString("subject_name", "") as String)
+        myactivity.setTitle("${arguments?.getString("subject_name", "") as String} Progress")
         subjectId = arguments?.getString("subject_id", "")
         binding.sectionsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.sectionsList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
