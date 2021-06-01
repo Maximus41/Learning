@@ -3,7 +3,6 @@ package com.poc.studytracker.sessions.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -59,7 +58,8 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
                 UpdateTopicSectionViewHolder updateTopicSectionViewHolder = (UpdateTopicSectionViewHolder) holder;
                 updateTopicSectionViewHolder.expandBtn.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 updateTopicSectionViewHolder.topicSectionTitle.setText(topicSectionModel.getSectionTitle());
-                updateTopicSectionViewHolder.sectionProgressPercent.setText(topicSectionModel.getSectionProgressPercent() + "% Progress");
+                //Todo:Calculate topic wise progress in a session
+//                updateTopicSectionViewHolder.sectionProgressPercent.setText(topicSectionModel.getSessionTopicProgressPercent() + "% Progress");
                 break;
             case CHILD_TYPE:
                 UpdateTopicPageModel topicPageModel = (UpdateTopicPageModel) listItem;

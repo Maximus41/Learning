@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:143493352725888597",
-      "lastPropertyId": "13:2328927096951417782",
+      "lastPropertyId": "14:8160081515575045111",
       "name": "Session",
       "properties": [
         {
@@ -83,6 +83,12 @@
           "id": "13:2328927096951417782",
           "name": "isSessionAssessed",
           "type": 1,
+          "flags": 4
+        },
+        {
+          "id": "14:8160081515575045111",
+          "name": "sessionStoryPoints",
+          "type": 7,
           "flags": 4
         }
       ],

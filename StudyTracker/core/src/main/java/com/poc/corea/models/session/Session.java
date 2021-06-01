@@ -24,6 +24,7 @@ public class Session {
     public boolean hasSessionEnded;
     public boolean isSessionActive;
     public boolean isSessionAssessed;
+    public float sessionStoryPoints;
     public ToMany<SessionTopic> topics;
 
     public String getSessionId() {

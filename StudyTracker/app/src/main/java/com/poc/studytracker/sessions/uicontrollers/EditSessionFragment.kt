@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.EditText
+import android.widget.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -178,7 +175,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         dialogButton.setOnClickListener(View.OnClickListener {
             if(TextUtils.isEmpty(sectionTitle.editableText.toString()) || TextUtils.isEmpty(firstPageTitle.editableText.toString())
                 || TextUtils.isEmpty(secondPageTitle.editableText.toString()))
-                    return@OnClickListener
+                return@OnClickListener
             createSessionTopic(sectionTitle.editableText.toString(),
                 firstPageTitle.editableText.toString(),
                 secondPageTitle.editableText.toString())
@@ -236,7 +233,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         }
         ObjectBox.store.boxFor(Para::class.java).put(paraList)
 
-        //Code to update story points in Section and Page, Session and SessionTopic tables after paragraph has been added
+        //Code to update story points in Section,Page, Session and SessionTopic tables after paragraph has been added
         val page = ObjectBox.store.boxFor(Page::class.java).query().equal(Page_.pageId, pageId).build().findFirst()
         val section = ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.sectionId, page!!.sectionId).build().findFirst()
         val sessionTopic = ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.topicId, topicId).build().findFirst()
@@ -247,9 +244,11 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         else
             sessionTopic.secondPageStoryPoints = page.pageStoryPoints
         sessionTopic!!.topicStoryPoints += totalParaStoryPoints
+        session.sessionStoryPoints += totalParaStoryPoints
         ObjectBox.store.boxFor(Page::class.java).put(page)
         ObjectBox.store.boxFor(Section::class.java).put(section)
         ObjectBox.store.boxFor(SessionTopic::class.java).put(sessionTopic)
+        ObjectBox.store.boxFor(Session::class.java).put(session)
 
         //Load Topics
         loadTopics(sessionId)
@@ -259,17 +258,31 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
     private fun createSessionTopic(sectiontitle : String, firstPage: String, secondPage: String) {
         if(TextUtils.isEmpty(sectiontitle) || firstPage == secondPage)
             return
-        var section = ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.sectionTitle, sectiontitle).build().findFirst()
+        var sessionTopic = ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.sessionId, sessionId)
+            .and().equal(SessionTopic_.sectionTitle, sectiontitle).build().findFirst()
+        if(sessionTopic != null) {
+            Toast.makeText(context, "You have already added $sectiontitle to this session", Toast.LENGTH_SHORT).show()
+            return
+        }
+        var section = ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.sectionTitle, sectiontitle).
+            and().equal(Section_.subjectId, session.subjectId).build().findFirst()
         if(section == null) {
             section = Section()
             section.createdOn = System.currentTimeMillis()
             section.sectionTitle = sectiontitle
             section.subjectId = session.subjectId
         }
-        val sessionTopic = SessionTopic()
+
+        sessionTopic = SessionTopic()
 
         if(!TextUtils.isEmpty(firstPage)) {
-            val page1 = Page()
+            var page1 = ObjectBox.store.boxFor(Page::class.java).query().equal(Page_.pageTitle, firstPage)
+                .and().equal(Page_.sectionId, section.sectionId).build().findFirst()
+            if(page1 != null && page1.sectionId == section.sectionId) {
+                Toast.makeText(context, "You have already learnt $firstPage", Toast.LENGTH_SHORT).show()
+                return
+            }
+            page1 = Page()
             val page1Progress = PageCumulativeProgress()
             page1.createdOn = System.currentTimeMillis()
             page1.pageTitle = firstPage
@@ -283,17 +296,22 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             page1Progress.practiceCount = 0;
             page1.progress.target = page1Progress
             section.pages.add(page1)
+            section.totalStoryPoints += page1.pageStoryPoints
 
             sessionTopic.firstPageId = page1.pageId
             sessionTopic.firstPageStoryPoints = page1.pageStoryPoints
             sessionTopic.firstPageTitle = page1.pageTitle
             sessionTopic.topicStoryPoints += page1.pageStoryPoints
-
-            section.totalStoryPoints += page1.pageStoryPoints
         }
 
         if(!TextUtils.isEmpty(secondPage)) {
-            val page2 = Page()
+            var page2 = ObjectBox.store.boxFor(Page::class.java).query().equal(Page_.pageTitle, secondPage)
+                .and().equal(Page_.sectionId, section.sectionId).build().findFirst()
+            if(page2 != null && page2.sectionId == section.sectionId) {
+                Toast.makeText(context, "You have already learnt $secondPage", Toast.LENGTH_SHORT).show()
+                return
+            }
+            page2 = Page()
             val page2Progress = PageCumulativeProgress()
             page2.createdOn = System.currentTimeMillis()
             page2.pageTitle = secondPage
@@ -307,13 +325,12 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             page2Progress.practiceCount = 0;
             page2.progress.target = page2Progress
             section.pages.add(page2)
+            section.totalStoryPoints += page2.pageStoryPoints
 
             sessionTopic.secondPageId = page2.pageId
             sessionTopic.secondPageStoryPoints = page2.pageStoryPoints
             sessionTopic.secondPageTitle = page2.pageTitle
             sessionTopic.topicStoryPoints += page2.pageStoryPoints
-
-            section.totalStoryPoints += page2.pageStoryPoints
         }
 
         section.noOfPages = section.pages.size
@@ -323,9 +340,13 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         sessionTopic.sessionId = sessionId
         sessionTopic.createdOn = System.currentTimeMillis()
 
+        session.sessionStoryPoints += sessionTopic.topicStoryPoints
+        session.topics.add(sessionTopic)
+
         val secId = ObjectBox.store.boxFor(Section::class.java).put(section)
         if(secId > 0)
-            ObjectBox.store.boxFor(SessionTopic::class.java).put(sessionTopic)
+            ObjectBox.store.boxFor(Session::class.java).put(session)
+        //            ObjectBox.store.boxFor(SessionTopic::class.java).put(sessionTopic)
         loadTopics(sessionId)
     }
 
