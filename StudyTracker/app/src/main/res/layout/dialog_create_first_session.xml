@@ -10,6 +10,7 @@
         android:id="@+id/etCreateSession"
         android:layout_width="match_parent"
         android:layout_height="36dp"
+        android:inputType="textCapWords"
         android:layout_gravity="center_horizontal"
         android:hint="Create Section"/>
 

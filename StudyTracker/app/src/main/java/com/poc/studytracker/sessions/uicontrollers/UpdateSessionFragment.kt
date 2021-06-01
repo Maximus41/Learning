@@ -4,20 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.poc.corea.constants.GlobalConstants
 import com.poc.corea.constants.PageActionStatus
 import com.poc.corea.models.session.Session
 import com.poc.corea.models.session.SessionTopic
 import com.poc.corea.models.session.SessionTopic_
 import com.poc.corea.models.session.Session_
+import com.poc.corea.models.subjects.Page
 import com.poc.corea.models.subjects.PageCumulativeProgress
 import com.poc.corea.models.subjects.PageCumulativeProgress_
+import com.poc.corea.models.subjects.Page_
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter
 import com.poc.studytracker.common.adapter.OnItemClickListener
+import com.poc.studytracker.common.adapter.VerticalSpacingItemDecoration
 import com.poc.studytracker.common.objectbox.ObjectBox
+import com.poc.studytracker.common.uicontrollers.MainActivity
 import com.poc.studytracker.databinding.FragmentUpdateSessionBinding
 import com.poc.studytracker.sessions.adapters.UpdateSessionAdapter
 import com.poc.studytracker.sessions.models.UpdateTopicPageModel
@@ -59,9 +65,12 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                 .subscribe(Consumer {
                     session = it[0]
                     binding.updateSessionList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                    binding.updateSessionList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
                     updateSessionListAdapter = UpdateSessionAdapter(this)
                     binding.updateSessionList.adapter = updateSessionListAdapter
-                    loadTopics(sessionId, (session.hasSessionEnded || session.hasSessionExpired))
+                    val myactivity = activity as MainActivity
+                    myactivity.setTitle("Update ${session.sessionTitle}")
+                    loadTopics(sessionId, (!session.isSessionActive || session.hasSessionEnded || session.hasSessionExpired))
                 })
     }
 
@@ -108,6 +117,8 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {
         val pageId = updateSessionListAdapter.getItem(pos).objectId
+        val page = ObjectBox.store.boxFor(Page::class.java).query().equal(Page_.pageId, pageId).build().findFirst()
+        val pageStoryPoints = page!!.pageStoryPoints
         val progress : PageCumulativeProgress = pageProgressMap[pageId]!!
         progress.pageId = pageId
         when(identifier) {
@@ -115,36 +126,49 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                 if(progress.readStatus == PageActionStatus.PENDING) {
                     progress.readStatus = PageActionStatus.COMPLETE
                     progress.readStatusRecordedOn = System.currentTimeMillis()
+                    progress.totalStoryPointsCovered += pageStoryPoints * 0.1f //10% effort
                 }
             }
             UpdateSessionAdapter.ACTION_TAKE_NOTES -> {
                 if(progress.notesTakenStatus == PageActionStatus.PENDING) {
                     progress.notesTakenStatus = PageActionStatus.COMPLETE
                     progress.notesStatusRecordedOn = System.currentTimeMillis()
+                    progress.totalStoryPointsCovered += pageStoryPoints * 0.2f //20% effort
                 }
             }
             UpdateSessionAdapter.ACTION_MEMORIZE -> {
                 if(progress.memorizedStatus == PageActionStatus.PENDING) {
                     progress.memorizedStatus = PageActionStatus.COMPLETE
                     progress.memorizedStatusRecordedOn = System.currentTimeMillis()
+                    progress.totalStoryPointsCovered += pageStoryPoints * 0.15f //15% effort
                 }
             }
             UpdateSessionAdapter.ACTION_REVIEW -> {
-                progress.reviewCount =+ 1
-                progress.lastReviewedOn = System.currentTimeMillis()
+                if(progress.reviewCount < GlobalConstants.MINIMUM_REVIEW_COUNT) {
+                    progress.reviewCount += 1
+                    progress.lastReviewedOn = System.currentTimeMillis()
+                    progress.totalStoryPointsCovered += (pageStoryPoints * 0.2f) / GlobalConstants.MINIMUM_REVIEW_COUNT  //20% effort
+                } else {
+                    Toast.makeText(context, "Exhausted Review Counts", Toast.LENGTH_LONG).show()
+                }
             }
             UpdateSessionAdapter.ACTION_PRACTICE -> {
-                progress.practiceCount += 1
-                progress.lastPracticedOn = System.currentTimeMillis()
+                if(progress.practiceCount < GlobalConstants.MINIMUM_PRACTICE_COUNT) {
+                    progress.practiceCount += 1
+                    progress.lastPracticedOn = System.currentTimeMillis()
+                    progress.totalStoryPointsCovered += (pageStoryPoints * 0.35f) / GlobalConstants.MINIMUM_PRACTICE_COUNT //35% effort
+                } else {
+                    Toast.makeText(context, "Exhausted Practice Counts", Toast.LENGTH_LONG).show()
+                }
             }
         }
-        pageProgressMap.put(pageId, progress)
+        pageProgressMap[pageId] = progress
         ObjectBox.store.boxFor(PageCumulativeProgress::class.java).put(progress)
         updateSessionListItems()
     }
 
     private fun loadPageProgress(pageIds : List<String>) {
-       val disposable = RxQuery.single(ObjectBox.store.boxFor(PageCumulativeProgress::class.java)
+        val disposable = RxQuery.single(ObjectBox.store.boxFor(PageCumulativeProgress::class.java)
                 .query().inValues(PageCumulativeProgress_.pageId, pageIds.toTypedArray()).build())
                 .subscribeOn(Schedulers.io())
                 .map {

@@ -115,7 +115,7 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
     public static class UpdateTopicSectionViewHolder extends RecyclerView.ViewHolder {
 
         TextView topicSectionTitle;
-        Button expandBtn;
+        ImageButton expandBtn;
 
         public UpdateTopicSectionViewHolder(@NonNull View itemView) {
             super(itemView);

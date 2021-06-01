@@ -4,21 +4,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.poc.corea.constants.GlobalConstants
 import com.poc.corea.models.session.Session
+import com.poc.corea.models.session.SessionTopic
+import com.poc.corea.models.session.SessionTopic_
 import com.poc.corea.models.session.Session_
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.OnItemClickListener
+import com.poc.studytracker.common.adapter.VerticalSpacingItemDecoration
 import com.poc.studytracker.common.objectbox.ObjectBox
+import com.poc.studytracker.common.uicontrollers.MainActivity
 import com.poc.studytracker.databinding.FragmentSessionsBinding
 import com.poc.studytracker.sessions.adapters.SessionsAdapter
 import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import kotlin.math.roundToInt
 
 class SessionsFragment : Fragment(), OnItemClickListener {
 
@@ -37,8 +44,11 @@ class SessionsFragment : Fragment(), OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val myactivity = activity as MainActivity
+        myactivity.setTitle("Sessions")
         subjectId = arguments?.getString("subject_id", "")
         binding.sessionsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.sessionsList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
         binding.sessionsList.adapter = SessionsAdapter(this)
         loadSessions(subjectId)
     }
@@ -52,7 +62,14 @@ class SessionsFragment : Fragment(), OnItemClickListener {
                     sessionsAdapter.setmItems(it)
                     binding.sessionsList.adapter = sessionsAdapter
                     endExpiredSessions()
+                    createNewSessionWhenLastSessionAssessed()
                 })
+    }
+
+    private fun createNewSessionWhenLastSessionAssessed() {
+        val currentSession = sessionsAdapter.items[sessionsAdapter.items.size - 1]
+        if(!currentSession.isSessionActive && currentSession.isSessionAssessed)
+            createNewSession(currentSession.sessionSerialNo + 1)
     }
 
     private fun endExpiredSessions() {
@@ -68,7 +85,8 @@ class SessionsFragment : Fragment(), OnItemClickListener {
         currentSession.hasSessionEnded = true
         currentSession.isSessionActive = false
         ObjectBox.store.boxFor(Session::class.java).put(currentSession)
-        createNewSession(currentSession.sessionSerialNo + 1)
+        loadSessions(subjectId)
+//        createNewSession(currentSession.sessionSerialNo + 1)
     }
 
     private fun createNewSession(slno : Int) {
@@ -102,13 +120,36 @@ class SessionsFragment : Fragment(), OnItemClickListener {
             }
             SessionsAdapter.START_SESSION_BTN -> {
                 val session = sessionsAdapter.getItem(pos)
+                val sessionTopicsCount = ObjectBox.store.boxFor(SessionTopic::class.java)
+                        .query()
+                        .equal(SessionTopic_.sessionId, session.sessionId)
+                        .build()
+                        .count()
+                if(sessionTopicsCount <= 0) {
+                    Toast.makeText(context, "Topics not defined", Toast.LENGTH_LONG).show()
+                    return
+                }
                 session.startedOn = System.currentTimeMillis()
                 session.isSessionActive = true
+                //Calculate Session Expiration Date
+                val topicsList = ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.sessionId, session.sessionId).build().find()
+                var totalStoryPoints = 0.0f
+                for(topic in topicsList)
+                    totalStoryPoints += topic.topicStoryPoints
+                val storyPointsTranslatedIntoDays = (totalStoryPoints / GlobalConstants.DAILY_STUDY_HOURS_IN_STORY_POINTS).roundToInt()
+                val totalDaysInMillis = storyPointsTranslatedIntoDays * 24 * 60 * 60 * 1000
+                session.expiresOn = session.startedOn + totalDaysInMillis
+
                 ObjectBox.store.boxFor(Session::class.java).put(session)
                 loadSessions(subjectId)
             }
             SessionsAdapter.STOP_SESSION_BTN -> {
                 endCurrentSession(sessionsAdapter.getItem(pos))
+            }
+            SessionsAdapter.ASSESS_SESSION_BTN -> {
+                val bundle = Bundle()
+                bundle.putString("session_id", sessionsAdapter.getItem(pos).sessionId)
+                NavHostFragment.findNavController(this).navigate(R.id.assessSessionFragment, bundle)
             }
         }
     }

@@ -12,6 +12,7 @@ import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.poc.corea.constants.GlobalConstants
 import com.poc.corea.constants.PageActionStatus
 import com.poc.corea.models.session.Session
 import com.poc.corea.models.session.SessionTopic
@@ -21,7 +22,9 @@ import com.poc.corea.models.subjects.*
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter
 import com.poc.studytracker.common.adapter.OnItemClickListener
+import com.poc.studytracker.common.adapter.VerticalSpacingItemDecoration
 import com.poc.studytracker.common.objectbox.ObjectBox
+import com.poc.studytracker.common.uicontrollers.MainActivity
 import com.poc.studytracker.databinding.FragmentEditSessionBinding
 import com.poc.studytracker.sessions.adapters.EditSessionListAdapter
 import com.poc.studytracker.sessions.models.TopicPageModel
@@ -65,8 +68,11 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
                 .subscribe(Consumer {
                     session = it[0]
                     binding.topicList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                    binding.topicList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
                     binding.topicList.adapter = EditSessionListAdapter(this)
                     loadTopics(sessionId)
+                    val myactivity = activity as MainActivity
+                    myactivity.setTitle("Edit ${session.sessionTitle}")
                 })
     }
 
@@ -75,25 +81,33 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
                 .subscribeOn(Schedulers.io())
                 .map {
                     val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
+                    val updatedSessionTopicList = ArrayList<SessionTopic>()
                     for(sessionTopic in it) {
+
                         val topicSectionModel = TopicSectionModel()
                         topicSectionModel.sectionTitle = sessionTopic.sectionTitle
                         topicSectionModel.setSectionId(sessionTopic.sectionId)
                         listItems.add(topicSectionModel)
 
-                        val firsPageModel = TopicPageModel()
-                        firsPageModel.pageTitle = sessionTopic.firstPageTitle
-                        firsPageModel.setPageId(sessionTopic.firstPageId)
-                        firsPageModel.setSectionId(sessionTopic.sectionId)
-                        firsPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.firstPageId)
-                        listItems.add(firsPageModel)
+                        if(!TextUtils.isEmpty(sessionTopic.firstPageId)) {
+                            val firsPageModel = TopicPageModel()
+                            firsPageModel.pageTitle = sessionTopic.firstPageTitle
+                            firsPageModel.setPageId(sessionTopic.firstPageId)
+                            firsPageModel.setSectionId(sessionTopic.sectionId)
+                            firsPageModel.sessionTopicId = sessionTopic.topicId
+                            firsPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.firstPageId)
+                            listItems.add(firsPageModel)
+                        }
 
-                        val secondPageModel = TopicPageModel()
-                        secondPageModel.pageTitle = sessionTopic.secondPageTitle
-                        secondPageModel.setPageId(sessionTopic.secondPageId)
-                        secondPageModel.setSectionId(sessionTopic.sectionId)
-                        secondPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.secondPageId)
-                        listItems.add(secondPageModel)
+                        if(!TextUtils.isEmpty(sessionTopic.secondPageId)) {
+                            val secondPageModel = TopicPageModel()
+                            secondPageModel.pageTitle = sessionTopic.secondPageTitle
+                            secondPageModel.setPageId(sessionTopic.secondPageId)
+                            secondPageModel.setSectionId(sessionTopic.sectionId)
+                            secondPageModel.sessionTopicId = sessionTopic.topicId
+                            secondPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.secondPageId)
+                            listItems.add(secondPageModel)
+                        }
                     }
                     return@map listItems
                 }
@@ -138,7 +152,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         dialog.show()
     }
 
-    fun showParagraphCreateDialog(pageId : String) {
+    fun showParagraphCreateDialog(topicId : String, pageId : String) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -164,13 +178,13 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             if(!TextUtils.isEmpty(para5.editableText.toString()))
                 paralist.add(para5.editableText.toString())
             if(!paralist.isEmpty())
-                createParas(pageId, paralist)
+                createParas(topicId, pageId, paralist)
             dialog.dismiss()
         })
         dialog.show()
     }
 
-    private fun createParas(pageId: String, paralist: ArrayList<String>) {
+    private fun createParas(topicId: String, pageId: String, paralist: ArrayList<String>) {
         val paraList = ArrayList<Para>()
         var totalParaStoryPoints = 0.0f
         for(para in paralist) {
@@ -180,70 +194,95 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             paragraph.pageId = pageId
             paraList.add(paragraph)
 
-            totalParaStoryPoints =+ paragraph.storyPoint
+            totalParaStoryPoints += paragraph.storyPoint
         }
         ObjectBox.store.boxFor(Para::class.java).put(paraList)
+
+        //Code to update story points in Section and Page, Session and SessionTopic tables after paragraph has been added
+        val page = ObjectBox.store.boxFor(Page::class.java).query().equal(Page_.pageId, pageId).build().findFirst()
+        val section = ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.sectionId, page!!.sectionId).build().findFirst()
+        val sessionTopic = ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.topicId, topicId).build().findFirst()
+        page.pageStoryPoints += totalParaStoryPoints
+        section!!.totalStoryPoints += totalParaStoryPoints
+        if(sessionTopic!!.firstPageId == page.pageId)
+            sessionTopic.firstPageStoryPoints = page.pageStoryPoints
+        else
+            sessionTopic.secondPageStoryPoints = page.pageStoryPoints
+        sessionTopic!!.topicStoryPoints += totalParaStoryPoints
+        ObjectBox.store.boxFor(Page::class.java).put(page)
+        ObjectBox.store.boxFor(Section::class.java).put(section)
+        ObjectBox.store.boxFor(SessionTopic::class.java).put(sessionTopic)
+
+        //Load Topics
         loadTopics(sessionId)
     }
 
 
     private fun createSessionTopic(sectiontitle : String, firstPage: String, secondPage: String) {
+        if(TextUtils.isEmpty(sectiontitle))
+            return
         val section = Section()
-        val page1 = Page()
-        val page2 = Page()
-
-        val page1Progress = PageCumulativeProgress()
-        val page2Progress = PageCumulativeProgress()
 
         section.createdOn = System.currentTimeMillis()
-        section.noOfPages = 2
         section.sectionTitle = sectiontitle
         section.subjectId = session.subjectId
 
-        page1.createdOn = System.currentTimeMillis()
-        page1.pageStoryPoints = 3.0f
-        page1.pageTitle = firstPage
-        page1.sectionId = section.sectionId
-
-        page1Progress.pageId = page1.pageId
-        page1Progress.memorizedStatus = PageActionStatus.PENDING
-        page1Progress.readStatus = PageActionStatus.PENDING
-        page1Progress.notesTakenStatus = PageActionStatus.PENDING
-        page1Progress.reviewCount = 0;
-        page1Progress.practiceCount = 0;
-        page1.progress.target = page1Progress
-
-        page2.createdOn = System.currentTimeMillis()
-        page2.pageStoryPoints = 3.0f
-        page2.pageTitle = secondPage
-        page2.sectionId = section.sectionId
-
-        page2Progress.pageId = page2.pageId
-        page2Progress.memorizedStatus = PageActionStatus.PENDING
-        page2Progress.readStatus = PageActionStatus.PENDING
-        page2Progress.notesTakenStatus = PageActionStatus.PENDING
-        page2Progress.reviewCount = 0;
-        page2Progress.practiceCount = 0;
-        page2.progress.target = page2Progress
-
-        section.pages.add(page1)
-        section.pages.add(page2)
-
         val sessionTopic = SessionTopic()
-        sessionTopic.firstPageId = page1.pageId
-        sessionTopic.firstPageStoryPoints = page1.pageStoryPoints
-        sessionTopic.firstPageTitle = page1.pageTitle
-        sessionTopic.secondPageId = page2.pageId
-        sessionTopic.secondPageStoryPoints = page2.pageStoryPoints
-        sessionTopic.secondPageTitle = page2.pageTitle
+
+        if(!TextUtils.isEmpty(firstPage)) {
+            val page1 = Page()
+            val page1Progress = PageCumulativeProgress()
+            page1.createdOn = System.currentTimeMillis()
+            page1.pageTitle = firstPage
+            page1.sectionId = section.sectionId
+
+            page1Progress.pageId = page1.pageId
+            page1Progress.memorizedStatus = PageActionStatus.PENDING
+            page1Progress.readStatus = PageActionStatus.PENDING
+            page1Progress.notesTakenStatus = PageActionStatus.PENDING
+            page1Progress.reviewCount = 0;
+            page1Progress.practiceCount = 0;
+            page1.progress.target = page1Progress
+            section.pages.add(page1)
+
+            sessionTopic.firstPageId = page1.pageId
+            sessionTopic.firstPageStoryPoints = page1.pageStoryPoints
+            sessionTopic.firstPageTitle = page1.pageTitle
+            sessionTopic.topicStoryPoints += page1.pageStoryPoints
+
+            section.totalStoryPoints += page1.pageStoryPoints
+        }
+
+        if(!TextUtils.isEmpty(secondPage)) {
+            val page2 = Page()
+            val page2Progress = PageCumulativeProgress()
+            page2.createdOn = System.currentTimeMillis()
+            page2.pageTitle = secondPage
+            page2.sectionId = section.sectionId
+
+            page2Progress.pageId = page2.pageId
+            page2Progress.memorizedStatus = PageActionStatus.PENDING
+            page2Progress.readStatus = PageActionStatus.PENDING
+            page2Progress.notesTakenStatus = PageActionStatus.PENDING
+            page2Progress.reviewCount = 0;
+            page2Progress.practiceCount = 0;
+            page2.progress.target = page2Progress
+            section.pages.add(page2)
+
+            sessionTopic.secondPageId = page2.pageId
+            sessionTopic.secondPageStoryPoints = page2.pageStoryPoints
+            sessionTopic.secondPageTitle = page2.pageTitle
+            sessionTopic.topicStoryPoints += page2.pageStoryPoints
+
+            section.totalStoryPoints += page2.pageStoryPoints
+        }
+
+        section.noOfPages = section.pages.size
+
         sessionTopic.sectionId = section.sectionId
         sessionTopic.sectionTitle = section.sectionTitle
         sessionTopic.sessionId = sessionId
-        sessionTopic.topicStoryPoints = page1.pageStoryPoints + page2.pageStoryPoints
         sessionTopic.createdOn = System.currentTimeMillis()
-
-        section.totalStoryPoints += page1.pageStoryPoints
-        section.totalStoryPoints += page2.pageStoryPoints
 
         val secId = ObjectBox.store.boxFor(Section::class.java).put(section)
         if(secId > 0)
@@ -253,7 +292,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
 
     override fun onItemClick(pos: Int) {
         val topicPageModel = editSessionListAdapter.items[pos] as TopicPageModel
-        showParagraphCreateDialog(topicPageModel.objectId)
+        showParagraphCreateDialog(topicPageModel.sessionTopicId, topicPageModel.objectId)
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {

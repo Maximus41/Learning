@@ -25,4 +25,8 @@
         android:id="@+id/subjectDetailsFragment"
         android:name="com.poc.studytracker.subjects.uicontrollers.SubjectDetailsFragment"
         android:label="SubjectDetailsFragment" />
+    <fragment
+        android:id="@+id/assessSessionFragment"
+        android:name="com.poc.studytracker.sessions.uicontrollers.AssessSessionFragment"
+        android:label="AssessSessionFragment" />
 </navigation>

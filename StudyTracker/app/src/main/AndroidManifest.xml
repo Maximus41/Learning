@@ -15,8 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudyTracker">
         <activity android:name=".common.uicontrollers.MainActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-            android:screenOrientation="landscape">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

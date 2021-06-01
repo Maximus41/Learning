@@ -1,62 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:elevation="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:weightSum="10"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <TextView
-            android:id="@+id/pageTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="page"
-            android:layout_weight="5"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:weightSum="10"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/readStatusUpdateBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/read_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
+            <TextView
+                android:id="@+id/pageTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="page"
+                android:layout_weight="5"/>
 
-        <ImageButton
-            android:id="@+id/notesTakenUpdateBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/notes_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
+            <ImageButton
+                android:id="@+id/readStatusUpdateBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/read_selector"
+                android:background="@android:color/transparent"
+                android:layout_weight="1"
+                android:layout_margin="1dp"/>
 
-        <ImageButton
-            android:id="@+id/memorizedNoteUpdateBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/memorized_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
+            <ImageButton
+                android:id="@+id/notesTakenUpdateBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/notes_selector"
+                android:background="@android:color/transparent"
+                android:layout_weight="1"
+                android:layout_margin="1dp"/>
 
-        <ImageButton
-            android:id="@+id/reviewButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/review_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
+            <ImageButton
+                android:id="@+id/memorizedNoteUpdateBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/memorized_selector"
+                android:background="@android:color/transparent"
+                android:layout_weight="1"
+                android:layout_margin="1dp"/>
 
-        <ImageButton
-            android:id="@+id/practiceButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/practice_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/reviewButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/review_selector"
+                android:background="@android:color/transparent"
+                android:layout_weight="1"
+                android:layout_margin="1dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/practiceButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/practice_selector"
+                android:background="@android:color/transparent"
+                android:layout_weight="1"
+                android:layout_margin="1dp"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -109,6 +109,7 @@ public abstract class BaseExpandableListAdapter<VH extends RecyclerView.ViewHold
 
         @Override
         public void onClick(View v) {
+            v.setSelected(!v.isSelected());
             toggle(pos, objectId);
         }
     }

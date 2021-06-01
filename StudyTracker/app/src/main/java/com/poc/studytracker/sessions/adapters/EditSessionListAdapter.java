@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -61,8 +62,12 @@ public class EditSessionListAdapter extends BaseExpandableListAdapter<RecyclerVi
                 TopicPageViewHolder topicPageViewHolder = (TopicPageViewHolder) holder;
                 topicPageViewHolder.topicPageTitle.setText(topicPageModel.getPageTitle());
                 topicPageViewHolder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
-                if(!TextUtils.isEmpty(topicPageModel.getParaformattedContent()))
+                if(!TextUtils.isEmpty(topicPageModel.getParaformattedContent())) {
+                    topicPageViewHolder.topicParaContent.setVisibility(View.VISIBLE);
                     topicPageViewHolder.topicParaContent.setText(Html.fromHtml(topicPageModel.getParaformattedContent()));
+                } else {
+                    topicPageViewHolder.topicParaContent.setVisibility(View.GONE);
+                }
                 break;
         }
     }
@@ -94,7 +99,7 @@ public class EditSessionListAdapter extends BaseExpandableListAdapter<RecyclerVi
     public static class TopicSectionViewHolder extends RecyclerView.ViewHolder {
 
         TextView topicSectionTitle;
-        Button expandBtn;
+        ImageButton expandBtn;
 
         public TopicSectionViewHolder(@NonNull View itemView) {
             super(itemView);
