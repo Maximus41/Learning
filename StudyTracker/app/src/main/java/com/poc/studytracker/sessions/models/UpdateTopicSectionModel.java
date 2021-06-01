@@ -5,7 +5,7 @@ import com.poc.studytracker.common.adapter.BaseExpandableListAdapter;
 public class UpdateTopicSectionModel implements BaseExpandableListAdapter.ExpandableListItem {
     private String sectionTitle;
     private String sectionId;
-    private int sectionProgressPercent;
+    private int sessionTopicProgressPercent;
 
     @Override
     public int getType() {
@@ -34,11 +34,11 @@ public class UpdateTopicSectionModel implements BaseExpandableListAdapter.Expand
         this.sectionId = sectionId;
     }
 
-    public int getSectionProgressPercent() {
-        return sectionProgressPercent;
+    public int getSessionTopicProgressPercent() {
+        return sessionTopicProgressPercent;
     }
 
-    public void setSectionProgressPercent(int sectionProgressPercent) {
-        this.sectionProgressPercent = sectionProgressPercent;
+    public void setSessionTopicProgressPercent(int sessionTopicProgressPercent) {
+        this.sessionTopicProgressPercent = sessionTopicProgressPercent;
     }
 }

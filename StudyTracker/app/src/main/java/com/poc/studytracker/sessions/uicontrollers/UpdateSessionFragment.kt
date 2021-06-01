@@ -42,6 +42,7 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
     lateinit var session : Session
     private var sessionId : String? = ""
     private var sessionPages = ArrayList<String>()
+    private var storyPointsCoveredInThisSession = 0.0f
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -75,7 +76,7 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
     }
 
     private fun loadTopics(sessionId: String?, isUpdateDisabled : Boolean) {
-        val disposable =RxQuery.single(ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.sessionId, sessionId).build())
+        val disposable = RxQuery.single(ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.sessionId, sessionId).build())
                 .subscribeOn(Schedulers.io())
                 .map {
                     val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
@@ -173,8 +174,10 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                 .subscribeOn(Schedulers.io())
                 .map {
                     val pageProgressMap = LinkedHashMap<String, PageCumulativeProgress>()
-                    for(progress in it)
-                        pageProgressMap.put(progress.pageId, progress)
+                    for(progress in it) {
+                        pageProgressMap[progress.pageId] = progress
+                        storyPointsCoveredInThisSession += progress.totalStoryPointsCovered
+                    }
                     return@map pageProgressMap
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -182,6 +185,7 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                     pageProgressMap = LinkedHashMap()
                     pageProgressMap.putAll(it)
                     updateSessionListItems()
+                    val sessionProgress = Math.round((storyPointsCoveredInThisSession / session.sessionStoryPoints) * 100)
                 })
     }
 
