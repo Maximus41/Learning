@@ -9,14 +9,14 @@
     <EditText
         android:id="@+id/para1"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Paragraph 1"/>
 
     <EditText
         android:id="@+id/para2"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Paragraph 2"
         android:layout_marginTop="8dp"/>
@@ -24,7 +24,7 @@
     <EditText
         android:id="@+id/para3"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Paragraph 3"
         android:layout_marginTop="8dp"/>
@@ -32,7 +32,7 @@
     <EditText
         android:id="@+id/para4"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Paragraph 4"
         android:layout_marginTop="8dp"/>
@@ -40,7 +40,7 @@
     <EditText
         android:id="@+id/para5"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Paragraph 5"
         android:layout_marginTop="8dp"/>
@@ -48,8 +48,10 @@
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="40dp"
         android:text="Submit"
+        android:textColor="@android:color/white"
+        android:background="#8BC34A"
         android:layout_marginTop="8dp"/>
 
 </LinearLayout>

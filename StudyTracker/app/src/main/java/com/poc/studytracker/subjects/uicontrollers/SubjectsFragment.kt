@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
@@ -38,24 +37,40 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate<FragmentSubjectsBinding>(inflater,
-            R.layout.fragment_subjects, container, false)
+        binding = DataBindingUtil.inflate<FragmentSubjectsBinding>(
+            inflater,
+            R.layout.fragment_subjects, container, false
+        )
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.subjectsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.subjectsList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_3)!!))
+        binding.subjectsList.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        binding.subjectsList.addItemDecoration(
+            VerticalSpacingItemDecoration(
+                activity?.resources?.getDimensionPixelOffset(
+                    R.dimen.dp_3
+                )!!
+            )
+        )
         binding.subjectsList.adapter = SubjectsAdapter(this)
         binding.createSubjectBtn.setOnClickListener(View.OnClickListener {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_subject, null)
+            val dialogView = LayoutInflater.from(context).inflate(
+                R.layout.dialog_create_subject,
+                null
+            )
             val dialog = AlertDialog.Builder(activity).setView(dialogView).create()
             val subject = dialogView.findViewById<EditText>(R.id.etCreateSubject)
-            dialogView.findViewById<Button>(R.id.btnCreate).setOnClickListener(View.OnClickListener {
-                createSubject(subject.editableText.toString())
-                dialog.dismiss()
-            })
+            dialogView.findViewById<Button>(R.id.btnCreate)
+                .setOnClickListener(View.OnClickListener {
+                    createSubject(subject.editableText.toString())
+                    dialog.dismiss()
+                })
             dialog.show()
         })
 
@@ -87,13 +102,18 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
                 })
     }
 
-    private fun countSessions(pos : Int) {
+    private fun countSessions(pos: Int) {
         val item : Subject = subjectsAdapter.getItem(pos)
-        val disposable = RxQuery.single(ObjectBox.store.boxFor(Session::class.java).query().equal(Session_.subjectId, item.subjectId).build())
+        val disposable = RxQuery.single(
+            ObjectBox.store.boxFor(Session::class.java).query().equal(
+                Session_.subjectId,
+                item.subjectId
+            ).build()
+        )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(Consumer {
-                    if(it == null || it.isEmpty())
+                    if (it == null || it.isEmpty())
                         createFirstSession(item.subjectId)
                     gotoSession(item.subjectId)
                 })
@@ -108,7 +128,7 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
        return ObjectBox.store.boxFor(Session::class.java).put(session);
     }
 
-    private fun gotoSession(subjectId : String) {
+    private fun gotoSession(subjectId: String) {
         val bundle = Bundle()
         bundle.putString("subject_id", subjectId)
         NavHostFragment.findNavController(this).navigate(R.id.sessionsFragment, bundle)
@@ -122,12 +142,13 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         NavHostFragment.findNavController(this).navigate(R.id.subjectDetailsFragment, bundle)
     }
 
-    override fun onButtonClickOnItem(identifier: Int, pos : Int) {
+    override fun onButtonClickOnItem(identifier: Int, pos: Int) {
         when(identifier) {
             SubjectsAdapter.GOTO_SESSION_BTN -> {
                 countSessions(pos)
             }
-            SubjectsAdapter.GOTO_SUMMARY_BTN -> {}
+            SubjectsAdapter.GOTO_SUMMARY_BTN -> {
+            }
         }
     }
 

@@ -9,14 +9,14 @@
     <EditText
         android:id="@+id/topicSectionTitle"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Enter Chapter Name"/>
 
     <EditText
         android:id="@+id/topicFirstPageTitle"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Enter 1st Topic Name"
         android:layout_marginTop="8dp"/>
@@ -24,7 +24,7 @@
     <EditText
         android:id="@+id/topicSecondPageTitle"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:hint="Enter 2nd Topic Name"
         android:layout_marginTop="8dp"/>
@@ -32,8 +32,10 @@
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="40dp"
         android:text="Submit"
+        android:textColor="@android:color/white"
+        android:background="#8BC34A"
         android:layout_marginTop="8dp"/>
 
 </LinearLayout>
