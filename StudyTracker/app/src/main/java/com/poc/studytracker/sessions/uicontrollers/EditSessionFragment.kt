@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
@@ -44,11 +46,11 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
     private var sessionId : String? = ""
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_edit_session, container, false)
+            R.layout.fragment_edit_session, container, false)
         return binding.root
     }
 
@@ -63,60 +65,91 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
 
     private fun loadSession(sessionId: String?) {
         RxQuery.single(ObjectBox.store.boxFor(Session::class.java).query().equal(Session_.sessionId, sessionId).build())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    session = it[0]
-                    binding.topicList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                    binding.topicList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
-                    binding.topicList.adapter = EditSessionListAdapter(this)
-                    loadTopics(sessionId)
-                    val myactivity = activity as MainActivity
-                    myactivity.setTitle("Edit ${session.sessionTitle}")
-                })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                session = it[0]
+                binding.topicList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.topicList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
+                binding.topicList.adapter = EditSessionListAdapter(this)
+                loadTopics(sessionId)
+                val myactivity = activity as MainActivity
+                myactivity.setTitle("Edit ${session.sessionTitle}")
+            })
+    }
+
+    private fun loadExistingSections(autoCompleteTextView: AutoCompleteTextView, page1AutoCompleteTextView: AutoCompleteTextView, page2AutoCompleteTextView: AutoCompleteTextView ,dialog: Dialog) {
+        val disposable = RxQuery.single(ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.subjectId, session.subjectId).build())
+            .subscribeOn(Schedulers.io())
+            .map {
+                val sectionList = ArrayList<String>()
+                val pageList = ArrayList<String>()
+                val map = HashMap<String, List<String>>()
+                for(section in  it) {
+                    sectionList.add(section.sectionTitle)
+                    val pages = section.pages
+                    for(page in pages)
+                        pageList.add(page.pageTitle)
+                }
+                map["section"] = sectionList
+                map["page"] = pageList
+                return@map map
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                val arrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, it["section"] as List<String>)
+                val pageArrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, it["page"] as List<String>)
+                autoCompleteTextView.threshold = 1
+                page1AutoCompleteTextView.threshold = 1
+                page2AutoCompleteTextView.threshold = 1
+                page1AutoCompleteTextView.setAdapter(pageArrayAdapter)
+                page2AutoCompleteTextView.setAdapter(pageArrayAdapter)
+                autoCompleteTextView.setAdapter(arrayAdapter)
+                dialog.show()
+            })
     }
 
     private fun loadTopics(sessionId: String?) {
         val disposable = RxQuery.single(ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(SessionTopic_.sessionId, sessionId).build())
-                .subscribeOn(Schedulers.io())
-                .map {
-                    val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
-                    val updatedSessionTopicList = ArrayList<SessionTopic>()
-                    for(sessionTopic in it) {
+            .subscribeOn(Schedulers.io())
+            .map {
+                val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
+                val updatedSessionTopicList = ArrayList<SessionTopic>()
+                for(sessionTopic in it) {
 
-                        val topicSectionModel = TopicSectionModel()
-                        topicSectionModel.sectionTitle = sessionTopic.sectionTitle
-                        topicSectionModel.setSectionId(sessionTopic.sectionId)
-                        listItems.add(topicSectionModel)
+                    val topicSectionModel = TopicSectionModel()
+                    topicSectionModel.sectionTitle = sessionTopic.sectionTitle
+                    topicSectionModel.setSectionId(sessionTopic.sectionId)
+                    listItems.add(topicSectionModel)
 
-                        if(!TextUtils.isEmpty(sessionTopic.firstPageId)) {
-                            val firsPageModel = TopicPageModel()
-                            firsPageModel.pageTitle = sessionTopic.firstPageTitle
-                            firsPageModel.setPageId(sessionTopic.firstPageId)
-                            firsPageModel.setSectionId(sessionTopic.sectionId)
-                            firsPageModel.sessionTopicId = sessionTopic.topicId
-                            firsPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.firstPageId)
-                            listItems.add(firsPageModel)
-                        }
-
-                        if(!TextUtils.isEmpty(sessionTopic.secondPageId)) {
-                            val secondPageModel = TopicPageModel()
-                            secondPageModel.pageTitle = sessionTopic.secondPageTitle
-                            secondPageModel.setPageId(sessionTopic.secondPageId)
-                            secondPageModel.setSectionId(sessionTopic.sectionId)
-                            secondPageModel.sessionTopicId = sessionTopic.topicId
-                            secondPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.secondPageId)
-                            listItems.add(secondPageModel)
-                        }
+                    if(!TextUtils.isEmpty(sessionTopic.firstPageId)) {
+                        val firsPageModel = TopicPageModel()
+                        firsPageModel.pageTitle = sessionTopic.firstPageTitle
+                        firsPageModel.setPageId(sessionTopic.firstPageId)
+                        firsPageModel.setSectionId(sessionTopic.sectionId)
+                        firsPageModel.sessionTopicId = sessionTopic.topicId
+                        firsPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.firstPageId)
+                        listItems.add(firsPageModel)
                     }
-                    return@map listItems
+
+                    if(!TextUtils.isEmpty(sessionTopic.secondPageId)) {
+                        val secondPageModel = TopicPageModel()
+                        secondPageModel.pageTitle = sessionTopic.secondPageTitle
+                        secondPageModel.setPageId(sessionTopic.secondPageId)
+                        secondPageModel.setSectionId(sessionTopic.sectionId)
+                        secondPageModel.sessionTopicId = sessionTopic.topicId
+                        secondPageModel.paraformattedContent = fetchAndFormatParaList(sessionTopic.secondPageId)
+                        listItems.add(secondPageModel)
+                    }
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    editSessionListAdapter = binding.topicList.adapter as EditSessionListAdapter
-                    editSessionListAdapter.setmItems(it)
-                    binding.topicList.adapter = editSessionListAdapter
-                })
+                return@map listItems
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                editSessionListAdapter = binding.topicList.adapter as EditSessionListAdapter
+                editSessionListAdapter.setmItems(it)
+                binding.topicList.adapter = editSessionListAdapter
+            })
     }
 
     private fun fetchAndFormatParaList(pageId : String): String? {
@@ -138,21 +171,26 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_create_session_topic)
-        val sectionTitle = dialog.findViewById(R.id.topicSectionTitle) as EditText
-        val firstPageTitle = dialog.findViewById(R.id.topicFirstPageTitle) as EditText
-        val secondPageTitle = dialog.findViewById(R.id.topicSecondPageTitle) as EditText
-
+        val sectionTitle = dialog.findViewById(R.id.topicSectionTitle) as AutoCompleteTextView
+        val firstPageTitle = dialog.findViewById(R.id.topicFirstPageTitle) as AutoCompleteTextView
+        val secondPageTitle = dialog.findViewById(R.id.topicSecondPageTitle) as AutoCompleteTextView
         val dialogButton: Button = dialog.findViewById(R.id.btnSubmit) as Button
         dialogButton.setOnClickListener(View.OnClickListener {
+            if(TextUtils.isEmpty(sectionTitle.editableText.toString()) || TextUtils.isEmpty(firstPageTitle.editableText.toString())
+                || TextUtils.isEmpty(secondPageTitle.editableText.toString()))
+                    return@OnClickListener
             createSessionTopic(sectionTitle.editableText.toString(),
-            firstPageTitle.editableText.toString(),
-            secondPageTitle.editableText.toString())
+                firstPageTitle.editableText.toString(),
+                secondPageTitle.editableText.toString())
             dialog.dismiss()
         })
-        dialog.show()
+        loadExistingSections(sectionTitle, firstPageTitle, secondPageTitle, dialog)
     }
 
     fun showParagraphCreateDialog(topicId : String, pageId : String) {
+        val paraCount =  ObjectBox.store.boxFor(Para::class.java).query().equal(Para_.pageId, pageId).build().count()
+        if(paraCount > 0)
+            return
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -219,14 +257,15 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
 
 
     private fun createSessionTopic(sectiontitle : String, firstPage: String, secondPage: String) {
-        if(TextUtils.isEmpty(sectiontitle))
+        if(TextUtils.isEmpty(sectiontitle) || firstPage == secondPage)
             return
-        val section = Section()
-
-        section.createdOn = System.currentTimeMillis()
-        section.sectionTitle = sectiontitle
-        section.subjectId = session.subjectId
-
+        var section = ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.sectionTitle, sectiontitle).build().findFirst()
+        if(section == null) {
+            section = Section()
+            section.createdOn = System.currentTimeMillis()
+            section.sectionTitle = sectiontitle
+            section.subjectId = session.subjectId
+        }
         val sessionTopic = SessionTopic()
 
         if(!TextUtils.isEmpty(firstPage)) {

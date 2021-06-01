@@ -20,6 +20,18 @@
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"/>
 
+        <TextView
+            android:id="@+id/tvSectionProgressPercent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20% Completed"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnExpandSection"
+            android:layout_marginRight="20dp"/>
+
         <ImageButton
             android:id="@+id/btnExpandSection"
             android:layout_width="wrap_content"

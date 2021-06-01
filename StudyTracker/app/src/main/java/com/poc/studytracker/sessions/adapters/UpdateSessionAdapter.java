@@ -59,6 +59,7 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
                 UpdateTopicSectionViewHolder updateTopicSectionViewHolder = (UpdateTopicSectionViewHolder) holder;
                 updateTopicSectionViewHolder.expandBtn.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 updateTopicSectionViewHolder.topicSectionTitle.setText(topicSectionModel.getSectionTitle());
+                updateTopicSectionViewHolder.sectionProgressPercent.setText(topicSectionModel.getSectionProgressPercent() + "% Progress");
                 break;
             case CHILD_TYPE:
                 UpdateTopicPageModel topicPageModel = (UpdateTopicPageModel) listItem;
@@ -122,11 +123,13 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
 
         TextView topicSectionTitle;
         ImageButton expandBtn;
+        TextView sectionProgressPercent;
 
         public UpdateTopicSectionViewHolder(@NonNull View itemView) {
             super(itemView);
             topicSectionTitle = itemView.findViewById(R.id.sectionTitle);
             expandBtn = itemView.findViewById(R.id.btnExpandSection);
+            sectionProgressPercent = itemView.findViewById(R.id.tvSectionProgressPercent);
         }
     }
 
