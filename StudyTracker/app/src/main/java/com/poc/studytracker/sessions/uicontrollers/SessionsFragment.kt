@@ -86,7 +86,6 @@ class SessionsFragment : Fragment(), OnItemClickListener {
         currentSession.isSessionActive = false
         ObjectBox.store.boxFor(Session::class.java).put(currentSession)
         loadSessions(subjectId)
-//        createNewSession(currentSession.sessionSerialNo + 1)
     }
 
     private fun createNewSession(slno : Int) {

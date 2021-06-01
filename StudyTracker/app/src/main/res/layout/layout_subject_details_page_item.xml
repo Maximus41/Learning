@@ -46,22 +46,61 @@
             android:layout_weight="1"
             android:layout_margin="1dp"/>
 
-        <ImageView
-            android:id="@+id/imgReviewStatus"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/review_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <ImageView
-            android:id="@+id/imgPracticeStatus"
+            <ImageView
+                android:id="@+id/imgReviewStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/review_selector"
+                android:layout_margin="1dp"/>
+
+            <TextView
+                android:id="@+id/reviewCount"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/counter_badge"
+                android:layout_gravity="top|right"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textSize="8sp"
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="2dp"/>
+
+        </FrameLayout>
+
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/practice_selector"
-            android:layout_weight="1"
-            android:layout_margin="1dp"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imgPracticeStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/practice_selector"
+                android:layout_margin="1dp"/>
+
+            <TextView
+                android:id="@+id/practiceCount"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/counter_badge"
+                android:layout_gravity="top|right"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textSize="8sp"
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="2dp"/>
+        </FrameLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9.2"
-            android:padding="@dimen/dp_8">
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,6 +40,10 @@
                     android:id="@+id/sessionSummaryLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
                     android:text="What have you learnt in this session?" />
 
                 <TextView
@@ -55,9 +59,7 @@
                     android:layout_width="match_parent"
                     app:render_type="Editor"
                     app:placeholder="Start writing here..."
-                    android:paddingTop="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
+                    android:padding="8dp"
                     android:minHeight="50dp"
                     android:background="#00ffff"
                     android:focusable="true"
@@ -69,8 +71,11 @@
                     android:id="@+id/planningLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     android:text="What should I learn next?"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="5dp"/>
 
                 <TextView
                     android:id="@+id/viewPlanning"
@@ -85,9 +90,7 @@
                     android:layout_width="match_parent"
                     app:render_type="Editor"
                     app:placeholder="Start writing here..."
-                    android:paddingTop="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
+                    android:padding="@dimen/dp_8"
                     android:minHeight="50dp"
                     android:background="#00ffff"
                     android:focusable="true"

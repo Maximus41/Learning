@@ -79,6 +79,12 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
                         topicPageModel.getReviewCount() > 0);
                 updateTopicPageViewHolder.reviewBtn.setSelected(topicPageModel.getReviewCount() > 0);
                 updateTopicPageViewHolder.practiceBtn.setSelected(topicPageModel.getPracticeCount() > 0);
+
+                updateTopicPageViewHolder.practiceCount.setVisibility(topicPageModel.getPracticeCount() > 0 ? View.VISIBLE : View.GONE);
+                updateTopicPageViewHolder.reviewCount.setVisibility(topicPageModel.getReviewCount() > 0 ? View.VISIBLE : View.GONE);
+                updateTopicPageViewHolder.reviewCount.setText(String.valueOf(topicPageModel.getReviewCount()));
+                updateTopicPageViewHolder.practiceCount.setText(String.valueOf(topicPageModel.getPracticeCount()));
+
                 updateTopicPageViewHolder.readBtn.setOnClickListener(v -> mListener.onButtonClickOnItem(ACTION_READ, position));
                 updateTopicPageViewHolder.notesBtn.setOnClickListener(v -> mListener.onButtonClickOnItem(ACTION_TAKE_NOTES, position));
                 updateTopicPageViewHolder.memorizedBtn.setOnClickListener(v -> mListener.onButtonClickOnItem(ACTION_MEMORIZE, position));
@@ -132,6 +138,8 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
         ImageButton memorizedBtn;
         ImageButton reviewBtn;
         ImageButton practiceBtn;
+        TextView reviewCount;
+        TextView practiceCount;
 
         public UpdateTopicPageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -141,6 +149,8 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
             memorizedBtn = itemView.findViewById(R.id.memorizedNoteUpdateBtn);
             reviewBtn = itemView.findViewById(R.id.reviewButton);
             practiceBtn = itemView.findViewById(R.id.practiceButton);
+            practiceCount = itemView.findViewById(R.id.practiceCount);
+            reviewCount = itemView.findViewById(R.id.reviewCount);
         }
     }
 
