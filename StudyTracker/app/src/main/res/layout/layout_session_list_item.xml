@@ -16,9 +16,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:text="Completed On : "
+            android:text="Ended On : "
             android:textStyle="bold"
             android:visibility="gone"
+            android:paddingTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -29,6 +30,7 @@
             android:textSize="10sp"
             android:text="24 Sep 2021"
             android:visibility="gone"
+            android:paddingTop="5dp"
             app:layout_constraintStart_toEndOf="@id/sessionCompletedDateLabel"
             app:layout_constraintTop_toTopOf="parent"/>
 

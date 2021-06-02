@@ -271,6 +271,9 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
             if(id > 0L) {
                 session.isSessionAssessed = true
                 ObjectBox.store.boxFor(Session::class.java).put(session)
+                Toast.makeText(context, "Assessment Submitted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Assessment couldn't be submitted ! Please try again later", Toast.LENGTH_SHORT).show()
             }
             NavHostFragment.findNavController(this).popBackStack()
         }

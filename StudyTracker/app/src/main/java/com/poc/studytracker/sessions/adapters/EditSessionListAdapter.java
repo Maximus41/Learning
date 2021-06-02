@@ -56,11 +56,13 @@ public class EditSessionListAdapter extends BaseExpandableListAdapter<RecyclerVi
                 TopicSectionViewHolder topicSectionViewHolder = (TopicSectionViewHolder) holder;
                 topicSectionViewHolder.expandBtn.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 topicSectionViewHolder.topicSectionTitle.setText(topicSectionModel.getSectionTitle());
+//                topicSectionViewHolder.topicSectionTitle.setSelected(true);
                 break;
             case CHILD_TYPE:
                 TopicPageModel topicPageModel = (TopicPageModel) listItem;
                 TopicPageViewHolder topicPageViewHolder = (TopicPageViewHolder) holder;
                 topicPageViewHolder.topicPageTitle.setText(topicPageModel.getPageTitle());
+//                topicPageViewHolder.topicPageTitle.setSelected(true);
                 topicPageViewHolder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
                 if(!TextUtils.isEmpty(topicPageModel.getParaformattedContent())) {
                     topicPageViewHolder.topicParaContent.setVisibility(View.VISIBLE);

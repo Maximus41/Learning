@@ -63,12 +63,14 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
                 SubjectSectionDetailsViewHolder sectionDetailsViewHolder = (SubjectSectionDetailsViewHolder) holder;
                 sectionDetailsViewHolder.expandButton.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 sectionDetailsViewHolder.sectionTitleTv.setText(subjectSectionModel.getSectionTitle());
+//                sectionDetailsViewHolder.sectionTitleTv.setSelected(true);
                 sectionDetailsViewHolder.sectionProgressPercent.setText(subjectSectionModel.getSectionProgressPercent() + "% Done");
                 break;
             case CHILD_TYPE:
                 SubjectPageModel subjectPageModel = (SubjectPageModel) listItem;
                 SubjectPageDetailsViewHolder pageDetailsViewHolder = (SubjectPageDetailsViewHolder) holder;
                 pageDetailsViewHolder.pageTitleTv.setText(subjectPageModel.getPageTitle());
+//                pageDetailsViewHolder.pageTitleTv.setSelected(true);
                 pageDetailsViewHolder.readStatus.setSelected(subjectPageModel.isRead());
                 pageDetailsViewHolder.notesStatus.setSelected(subjectPageModel.isNotesTaken());
                 pageDetailsViewHolder.memorizedStatus.setSelected(subjectPageModel.isMemorized());
