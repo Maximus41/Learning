@@ -17,6 +17,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:text="Page"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:background="#B2EBF2"
             android:gravity="center_vertical"
             android:textSize="16sp"

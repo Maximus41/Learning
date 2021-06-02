@@ -147,7 +147,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
                 val sessionAproxTime = (session.sessionStoryPoints * GlobalConstants.ONE_STORY_POINT_IN_HOURS).roundToInt()
                 if(!it.isEmpty()) {
                     binding.approxTime.visibility = View.VISIBLE
-                    binding.approxTime.text = "Approx Time Needed : $sessionAproxTime hrs"
+                    binding.approxTime.text = "Approx Effort Needed : $sessionAproxTime hrs"
                 }
                 editSessionListAdapter = binding.topicList.adapter as EditSessionListAdapter
                 editSessionListAdapter.setmItems(it)

@@ -1,5 +1,7 @@
 package com.poc.studytracker.sessions.uicontrollers
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -100,6 +102,7 @@ class SessionsFragment : Fragment(), OnItemClickListener {
             //Todo:Add incomplete session topic from previous sessions
 
             ObjectBox.store.boxFor(Session::class.java).put(session);
+            Toast.makeText(context, "New Session Created", Toast.LENGTH_SHORT).show()
             loadSessions(subjectId)
         }
     }
@@ -108,6 +111,20 @@ class SessionsFragment : Fragment(), OnItemClickListener {
         val bundle = Bundle()
         bundle.putString("session_id", sessionsAdapter.getItem(pos).sessionId)
         NavHostFragment.findNavController(this).navigate(R.id.updateSessionFragment, bundle)
+    }
+
+    private fun stopSessionDialog(currentSession: Session) {
+        AlertDialog.Builder(context)
+                .setMessage("Are you sure you want to stop the session?")
+                .setPositiveButton("Yes", DialogInterface.OnClickListener() {
+                    dialog: DialogInterface?, which: Int ->
+                    endCurrentSession(currentSession)
+                    dialog?.dismiss()
+                })
+                .setNegativeButton("No", DialogInterface.OnClickListener() {
+                    dialog, which ->  dialog.dismiss()
+                })
+                .show()
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {
@@ -140,10 +157,11 @@ class SessionsFragment : Fragment(), OnItemClickListener {
                 session.expiresOn = session.startedOn + totalDaysInMillis
 
                 ObjectBox.store.boxFor(Session::class.java).put(session)
+                Toast.makeText(context, "This session has started", Toast.LENGTH_SHORT).show()
                 loadSessions(subjectId)
             }
             SessionsAdapter.STOP_SESSION_BTN -> {
-                endCurrentSession(sessionsAdapter.getItem(pos))
+                stopSessionDialog(sessionsAdapter.getItem(pos))
             }
             SessionsAdapter.ASSESS_SESSION_BTN -> {
                 val bundle = Bundle()

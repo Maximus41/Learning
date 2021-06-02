@@ -12,12 +12,17 @@
 
         <TextView
             android:id="@+id/sectionTitle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:text="Section"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:layout_marginRight="@dimen/dp_8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnExpandSection"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView

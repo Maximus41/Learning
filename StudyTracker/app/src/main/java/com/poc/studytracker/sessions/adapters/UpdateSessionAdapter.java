@@ -58,6 +58,7 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
                 UpdateTopicSectionViewHolder updateTopicSectionViewHolder = (UpdateTopicSectionViewHolder) holder;
                 updateTopicSectionViewHolder.expandBtn.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 updateTopicSectionViewHolder.topicSectionTitle.setText(topicSectionModel.getSectionTitle());
+//                updateTopicSectionViewHolder.topicSectionTitle.setSelected(true);
                 //Todo:Calculate topic wise progress in a session
 //                updateTopicSectionViewHolder.sectionProgressPercent.setText(topicSectionModel.getSessionTopicProgressPercent() + "% Progress");
                 break;
@@ -65,6 +66,7 @@ public class UpdateSessionAdapter extends BaseExpandableListAdapter<RecyclerView
                 UpdateTopicPageModel topicPageModel = (UpdateTopicPageModel) listItem;
                 UpdateTopicPageViewHolder updateTopicPageViewHolder = (UpdateTopicPageViewHolder) holder;
                 updateTopicPageViewHolder.topicPageTitle.setText(topicPageModel.getPageTitle());
+//                updateTopicPageViewHolder.topicPageTitle.setSelected(true);
                 updateTopicPageViewHolder.readBtn.setEnabled(!topicPageModel.isRead() && !topicPageModel.isActionsFreezed());
                 updateTopicPageViewHolder.readBtn.setSelected(topicPageModel.isRead());
                 updateTopicPageViewHolder.notesBtn.setEnabled(topicPageModel.isRead() && !topicPageModel.isNotesTaken() && !topicPageModel.isActionsFreezed());
