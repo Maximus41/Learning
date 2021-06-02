@@ -8,15 +8,36 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="65dp"
         xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <TextView
+            android:id="@+id/sessionCompletedDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:text="Completed On : "
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/sessionCompletedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:text="24 Sep 2021"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/sessionCompletedDateLabel"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/sessionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sessionCompletedDateLabel"
             android:textStyle="bold"
             android:textSize="16sp"
             android:text="Subject"

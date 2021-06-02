@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.poc.studytracker.R;
 import com.poc.studytracker.common.adapter.BaseExpandableListAdapter;
+import com.poc.studytracker.common.adapter.OnItemClickListener;
 import com.poc.studytracker.subjects.models.SubjectPageModel;
 import com.poc.studytracker.subjects.models.SubjectSectionModel;
 
@@ -21,8 +22,11 @@ import java.util.List;
 
 public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerView.ViewHolder> {
 
-    public SubjectDetailsAdapter() {
+    private OnItemClickListener mListener;
+
+    public SubjectDetailsAdapter(OnItemClickListener mListener) {
         this.mItems = new ArrayList<>();
+        this.mListener = mListener;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class SubjectDetailsAdapter extends BaseExpandableListAdapter<RecyclerVie
                 pageDetailsViewHolder.reviewCount.setVisibility(subjectPageModel.getReviewCount() > 0 ? View.VISIBLE : View.GONE);
                 pageDetailsViewHolder.reviewCount.setText(String.valueOf(subjectPageModel.getReviewCount()));
                 pageDetailsViewHolder.practiceCount.setText(String.valueOf(subjectPageModel.getPracticeCount()));
+                pageDetailsViewHolder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
                 break;
         }
     }

@@ -51,6 +51,8 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
             holder.btnStartSession.setVisibility(View.GONE);
             holder.btnStopSession.setVisibility(View.VISIBLE);
             holder.expiryDate.setVisibility(View.VISIBLE);
+            holder.completedDateLabel.setVisibility(View.GONE);
+            holder.completedDate.setVisibility(View.GONE);
         }
 
         if(mItems.get(position).hasSessionEnded || mItems.get(position).hasSessionExpired) {
@@ -59,11 +61,14 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
             holder.btnStartSession.setVisibility(View.GONE);
             holder.expiryDate.setVisibility(View.GONE);
             holder.btnAssessment.setVisibility(View.VISIBLE);
+            holder.completedDateLabel.setVisibility(View.VISIBLE);
+            holder.completedDate.setVisibility(View.VISIBLE);
         }
 
         holder.btnAssessment.setSelected(mItems.get(position).isSessionAssessed);
         holder.sessionTitle.setText(mItems.get(position).sessionTitle);
         holder.expiryDate.setText(simpleDateFormat.format(new Date(mItems.get(position).expiresOn)));
+        holder.completedDate.setText(simpleDateFormat.format(new Date(mItems.get(position).endedOn)));
         holder.btnEditSession.setOnClickListener(v -> mListener.onButtonClickOnItem(EDIT_SESSION_BTN, position));
         holder.btnStartSession.setOnClickListener(v -> mListener.onButtonClickOnItem(START_SESSION_BTN, position));
         holder.btnStopSession.setOnClickListener(v -> mListener.onButtonClickOnItem(STOP_SESSION_BTN, position));
@@ -97,6 +102,8 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
         ImageButton btnStopSession;
         ImageButton btnAssessment;
         TextView expiryDate;
+        TextView completedDateLabel;
+        TextView completedDate;
 
         public SessionsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -106,6 +113,8 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.Sessio
             btnStopSession = itemView.findViewById(R.id.btnStop);
             btnAssessment = itemView.findViewById(R.id.btnAssessment);
             expiryDate = itemView.findViewById(R.id.expiryDate);
+            completedDateLabel = itemView.findViewById(R.id.sessionCompletedDateLabel);
+            completedDate = itemView.findViewById(R.id.sessionCompletedDate);
         }
     }
 
