@@ -33,6 +33,7 @@ import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import kotlin.math.roundToInt
 
 class UpdateSessionFragment : Fragment(), OnItemClickListener {
 
@@ -122,6 +123,10 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
         val pageStoryPoints = page!!.pageStoryPoints
         val progress : PageCumulativeProgress = pageProgressMap[pageId]!!
         progress.pageId = pageId
+        if(Math.round((progress.totalStoryPointsCovered / page.pageStoryPoints) * 100) == 100) {
+            Toast.makeText(context, "Can't update 100% learnt Topic", Toast.LENGTH_SHORT).show()
+            return
+        }
         when(identifier) {
             UpdateSessionAdapter.ACTION_READ -> {
                 if(progress.readStatus == PageActionStatus.PENDING) {

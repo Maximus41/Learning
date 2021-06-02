@@ -33,6 +33,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.lang.StringBuilder
+import kotlin.math.roundToInt
 
 
 class EditSessionFragment : Fragment() , OnItemClickListener{
@@ -143,6 +144,11 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(Consumer {
+                val sessionAproxTime = (session.sessionStoryPoints * GlobalConstants.ONE_STORY_POINT_IN_HOURS).roundToInt()
+                if(!it.isEmpty()) {
+                    binding.approxTime.visibility = View.VISIBLE
+                    binding.approxTime.text = "Approx Time Needed : $sessionAproxTime hrs"
+                }
                 editSessionListAdapter = binding.topicList.adapter as EditSessionListAdapter
                 editSessionListAdapter.setmItems(it)
                 binding.topicList.adapter = editSessionListAdapter
