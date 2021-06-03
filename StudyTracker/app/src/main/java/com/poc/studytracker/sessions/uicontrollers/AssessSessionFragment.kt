@@ -40,12 +40,12 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
     lateinit var assessmentAdapter : AssessPageContentListAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_assess_session, container, false
+                inflater,
+                R.layout.fragment_assess_session, container, false
         )
         return binding.root
     }
@@ -54,16 +54,16 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         sessionId = arguments?.getString("session_id", "")
         binding.pageContentList.layoutManager = LinearLayoutManager(
-            context,
-            LinearLayoutManager.HORIZONTAL,
-            false
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
         )
         binding.pageContentList.addItemDecoration(
-            HorizontalSpacingItemDecoration(
-                activity?.resources?.getDimensionPixelOffset(
-                    R.dimen.dp_8
-                )!!
-            )
+                HorizontalSpacingItemDecoration(
+                        activity?.resources?.getDimensionPixelOffset(
+                                R.dimen.dp_8
+                        )!!
+                )
         )
 
         binding.btnAssess.setOnClickListener(View.OnClickListener {
@@ -85,75 +85,79 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
 
     private fun loadSession(sessionId: String?) {
         RxQuery.single(
-            ObjectBox.store.boxFor(Session::class.java).query().equal(
-                Session_.sessionId,
-                sessionId
-            ).build()
+                ObjectBox.store.boxFor(Session::class.java).query().equal(
+                        Session_.sessionId,
+                        sessionId
+                ).build()
         )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                session = it[0]
-                val myactivity = activity as MainActivity
-                if (!session.isSessionAssessed) {
-                    myactivity.setTitle("Assess ${session.sessionTitle}")
-                    binding.btnAssess.visibility = View.VISIBLE
-                    loadSessionTopics()
-                } else {
-                    myactivity.setTitle("View Assessment")
-                    binding.pageContentList.visibility = View.GONE
-                    binding.btnAssess.visibility = View.GONE
-                    loadAssessments()
-                    binding.tools.visibility = View.GONE
-                    binding.sessionSummary.visibility = View.GONE
-                    binding.planning.visibility = View.GONE
-                }
-            })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer {
+                    session = it[0]
+                    val myactivity = activity as MainActivity
+                    if (!session.isSessionAssessed) {
+                        myactivity.setTitle("Assess ${session.sessionTitle}")
+                        binding.btnAssess.visibility = View.VISIBLE
+                        loadSessionTopics()
+                    } else {
+                        myactivity.setTitle("View Assessment")
+                        binding.pageContentList.visibility = View.GONE
+                        binding.btnAssess.visibility = View.GONE
+                        loadAssessments()
+                        binding.tools.visibility = View.GONE
+                        binding.sessionSummary.visibility = View.GONE
+                        binding.planning.visibility = View.GONE
+                    }
+                })
     }
 
     private fun loadAssessments() {
         RxQuery.single(
-            ObjectBox.store.boxFor(SessionAssessment::class.java).query().equal(
-                SessionAssessment_.sessionId,
-                sessionId
-            ).build()
+                ObjectBox.store.boxFor(SessionAssessment::class.java).query().equal(
+                        SessionAssessment_.sessionId,
+                        sessionId
+                ).build()
         )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                binding.viewSummary.visibility = View.VISIBLE
-                binding.viewPlanning.visibility = View.VISIBLE
-                binding.viewSummary.text = Html.fromHtml(it[0].sessionSummary)
-                binding.viewPlanning.text = Html.fromHtml(it[0].nextSessionPlan)
-            })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer {
+                    binding.viewSummary.visibility = View.VISIBLE
+                    binding.viewPlanning.visibility = View.VISIBLE
+                    binding.viewSummary.text = Html.fromHtml(it[0].sessionSummary)
+                    binding.viewPlanning.text = Html.fromHtml(it[0].nextSessionPlan)
+                })
     }
 
     private fun loadSessionTopics() {
         val disposable = RxQuery.single(
-            ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(
-                SessionTopic_.sessionId,
-                sessionId
-            ).build()
+                ObjectBox.store.boxFor(SessionTopic::class.java).query().equal(
+                        SessionTopic_.sessionId,
+                        sessionId
+                ).build()
         )
-            .subscribeOn(Schedulers.io())
-            .map {
-                val pageContentList = ArrayList<AssessmentPageContentModel>()
-                for(topic in it) {
-                    val pageContent1 = createPageContent(topic.firstPageId, topic.firstPageTitle)
-                    val pageContent2 = createPageContent(
-                        topic.secondPageId,
-                        topic.secondPageTitle
-                    )
-                    pageContentList.add(pageContent1)
-                    pageContentList.add(pageContent2)
+                .subscribeOn(Schedulers.io())
+                .map {
+                    val pageContentList = ArrayList<AssessmentPageContentModel>()
+                    for(topic in it) {
+                        if(!TextUtils.isEmpty(topic.firstPageId)) {
+                            val pageContent1 = createPageContent(topic.firstPageId, topic.firstPageTitle)
+                            pageContentList.add(pageContent1)
+                        }
+                        if(!TextUtils.isEmpty(topic.secondPageId)) {
+                            val pageContent2 = createPageContent(
+                                    topic.secondPageId,
+                                    topic.secondPageTitle
+                            )
+                            pageContentList.add(pageContent2)
+                        }
+                    }
+                    return@map pageContentList
                 }
-                return@map pageContentList
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                assessmentAdapter.setmItems(it)
-                binding.pageContentList.adapter = assessmentAdapter
-            })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer {
+                    assessmentAdapter.setmItems(it)
+                    binding.pageContentList.adapter = assessmentAdapter
+                })
     }
 
     private fun createPageContent(pageId: String, pageTitle: String) : AssessmentPageContentModel {
@@ -161,11 +165,11 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
         if(!TextUtils.isEmpty(pageId)) {
             pageContent.pageTitle = pageTitle
             val paraList = ObjectBox.store
-                .boxFor(Para::class.java)
-                .query()
-                .equal(Para_.pageId, pageId)
-                .build()
-                .find()
+                    .boxFor(Para::class.java)
+                    .query()
+                    .equal(Para_.pageId, pageId)
+                    .build()
+                    .find()
             if(paraList != null && !paraList.isEmpty()) {
                 var count = 0
                 val sb = StringBuilder()
@@ -188,68 +192,68 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
     private fun initializeEditorTools() {
         binding.root.findViewById<Button>(R.id.action_h1).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.H1
+                    EditorTextStyle.H1
             )
         })
         binding.root.findViewById<Button>(R.id.action_h2).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.H2
+                    EditorTextStyle.H2
             )
         })
         binding.root.findViewById<Button>(R.id.action_h3).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.H3
+                    EditorTextStyle.H3
             )
         })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_bold).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.BOLD
+                    EditorTextStyle.BOLD
             )
         })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_Italic).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.ITALIC
+                    EditorTextStyle.ITALIC
             )
         })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_indent).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.INDENT
+                    EditorTextStyle.INDENT
             )
         })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_outdent).setOnClickListener(View.OnClickListener {
             getEditor().updateTextStyle(
-                EditorTextStyle.OUTDENT
+                    EditorTextStyle.OUTDENT
             )
         })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_bulleted).setOnClickListener(
-            View.OnClickListener {
-                getEditor().insertList(
-                    false
-                )
-            })
+                View.OnClickListener {
+                    getEditor().insertList(
+                            false
+                    )
+                })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_color).setOnClickListener(View.OnClickListener {
             getEditor().updateTextColor(
-                "#FF3333"
+                    "#FF3333"
             )
         })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_unordered_numbered).setOnClickListener(
-            View.OnClickListener {
-                getEditor().insertList(
-                    true
-                )
-            })
+                View.OnClickListener {
+                    getEditor().insertList(
+                            true
+                    )
+                })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_hr).setOnClickListener(View.OnClickListener { getEditor().insertDivider() })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_insert_image).setOnClickListener(
-            View.OnClickListener { getEditor().openImagePicker() })
+                View.OnClickListener { getEditor().openImagePicker() })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_insert_link).setOnClickListener(
-            View.OnClickListener { getEditor().insertLink() })
+                View.OnClickListener { getEditor().insertLink() })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_erase).setOnClickListener(View.OnClickListener { getEditor().clearAllContents() })
         binding.root.findViewById<AppCompatImageButton>(R.id.action_blockquote).setOnClickListener(
-            View.OnClickListener {
-                getEditor().updateTextStyle(
-                    EditorTextStyle.BLOCKQUOTE
-                )
-            })
+                View.OnClickListener {
+                    getEditor().updateTextStyle(
+                            EditorTextStyle.BLOCKQUOTE
+                    )
+                })
 
 //        editor.render()
     }

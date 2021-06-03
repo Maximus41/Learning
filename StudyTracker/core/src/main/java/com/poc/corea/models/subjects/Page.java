@@ -1,5 +1,7 @@
 package com.poc.corea.models.subjects;
 
+import com.poc.corea.constants.GlobalConstants;
+
 import java.util.UUID;
 
 import io.objectbox.annotation.Entity;
@@ -17,7 +19,7 @@ public class Page {
     private String pageId = UUID.randomUUID().toString();
     public String pageTitle;
     public long createdOn;
-    public float pageStoryPoints = 0.5f;
+    public float pageStoryPoints = GlobalConstants.DEFAULT_PAGE_STORY_POINTS;
     public ToMany<Para> paras;
     public ToOne<PageCumulativeProgress> progress;
 
