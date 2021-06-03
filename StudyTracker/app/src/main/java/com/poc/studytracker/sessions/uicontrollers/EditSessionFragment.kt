@@ -179,9 +179,10 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
         val secondPageTitle = dialog.findViewById(R.id.topicSecondPageTitle) as AutoCompleteTextView
         val dialogButton: Button = dialog.findViewById(R.id.btnSubmit) as Button
         dialogButton.setOnClickListener(View.OnClickListener {
-            if(TextUtils.isEmpty(sectionTitle.editableText.toString()) || TextUtils.isEmpty(firstPageTitle.editableText.toString())
-                || TextUtils.isEmpty(secondPageTitle.editableText.toString()))
+            if(TextUtils.isEmpty(sectionTitle.editableText.toString()) || TextUtils.isEmpty(firstPageTitle.editableText.toString())) {
+                Toast.makeText(context, "Section/1st topic mandatory", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
+            }
             createSessionTopic(sectionTitle.editableText.toString(),
                 firstPageTitle.editableText.toString(),
                 secondPageTitle.editableText.toString())

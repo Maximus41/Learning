@@ -1,6 +1,7 @@
 package com.poc.studytracker.sessions.uicontrollers
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,19 +88,23 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
                         topicSectionModel.setSectionId(sessionTopic.sectionId)
                         listItems.add(topicSectionModel)
 
-                        val firsPageModel = UpdateTopicPageModel()
-                        firsPageModel.pageTitle = sessionTopic.firstPageTitle
-                        firsPageModel.setPageId(sessionTopic.firstPageId)
-                        firsPageModel.setSectionId(sessionTopic.sectionId)
-                        firsPageModel.isActionsFreezed = isUpdateDisabled
-                        listItems.add(firsPageModel)
+                        if(!TextUtils.isEmpty(sessionTopic.firstPageId)) {
+                            val firsPageModel = UpdateTopicPageModel()
+                            firsPageModel.pageTitle = sessionTopic.firstPageTitle
+                            firsPageModel.setPageId(sessionTopic.firstPageId)
+                            firsPageModel.setSectionId(sessionTopic.sectionId)
+                            firsPageModel.isActionsFreezed = isUpdateDisabled
+                            listItems.add(firsPageModel)
+                        }
 
-                        val secondPageModel = UpdateTopicPageModel()
-                        secondPageModel.pageTitle = sessionTopic.secondPageTitle
-                        secondPageModel.setPageId(sessionTopic.secondPageId)
-                        secondPageModel.setSectionId(sessionTopic.sectionId)
-                        secondPageModel.isActionsFreezed = isUpdateDisabled
-                        listItems.add(secondPageModel)
+                        if(!TextUtils.isEmpty(sessionTopic.secondPageId)) {
+                            val secondPageModel = UpdateTopicPageModel()
+                            secondPageModel.pageTitle = sessionTopic.secondPageTitle
+                            secondPageModel.setPageId(sessionTopic.secondPageId)
+                            secondPageModel.setSectionId(sessionTopic.sectionId)
+                            secondPageModel.isActionsFreezed = isUpdateDisabled
+                            listItems.add(secondPageModel)
+                        }
                         synchronized(sessionPages) {
                             sessionPages.add(sessionTopic.firstPageId)
                             sessionPages.add(sessionTopic.secondPageId)

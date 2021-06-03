@@ -1,5 +1,7 @@
 package com.poc.corea.models.subjects;
 
+import com.poc.corea.constants.GlobalConstants;
+
 import java.util.UUID;
 
 import io.objectbox.annotation.Entity;
@@ -15,7 +17,7 @@ public class Para {
     private String paraId = UUID.randomUUID().toString();
     public String paraTitle;
     public long createdOn;
-    public float storyPoint = 0.15f;
+    public float storyPoint = GlobalConstants.DEFAULT_PARA_STORY_POINTS;
 
     public String getParaId() {
         return paraId;
