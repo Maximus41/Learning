@@ -43,6 +43,13 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
         holder.subjectTitle.setText(mItems.get(position).subjectTitle);
         holder.btnGotoSession.setOnClickListener(v -> mListener.onButtonClickOnItem(GOTO_SESSION_BTN, position));
         holder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mListener.onItemLongClickListener(position, v);
+                return true;
+            }
+        });
     }
 
     @Override
