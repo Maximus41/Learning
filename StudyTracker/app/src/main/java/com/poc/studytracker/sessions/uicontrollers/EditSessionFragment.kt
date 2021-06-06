@@ -371,21 +371,29 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             when(it.itemId) {
                 R.id.deleteItem -> {
                     val sessionTopicBox = ObjectBox.store.boxFor(SessionTopic::class.java)
+                    val sectionBox = ObjectBox.store.boxFor(Section::class.java)
                     val pageBox = ObjectBox.store.boxFor(Page::class.java)
                     val paraBox = ObjectBox.store.boxFor(Para::class.java)
+                    val progressBox = ObjectBox.store.boxFor(PageCumulativeProgress::class.java)
                     val topicSectionModel = editSessionListAdapter.getItem(pos) as TopicSectionModel
                     val sessionTopic = sessionTopicBox.get(topicSectionModel.topicObId)
+                    val section = sectionBox.query().equal(Section_.sectionId, sessionTopic.sectionId).build().findFirst()
                     val firstPage = pageBox.query().equal(Page_.pageId, sessionTopic.firstPageId).build().findFirst()
                     val paras = paraBox.query().equal(Para_.pageId, firstPage!!.pageId).build().find()
+                    val progress = progressBox.query().equal(PageCumulativeProgress_.pageId, firstPage.pageId).build().findFirst()
+                    progressBox.remove(progress)
                     paraBox.remove(paras)
                     pageBox.remove(firstPage)
                     if(!TextUtils.isEmpty(sessionTopic.secondPageId)) {
                         val secondPage = pageBox.query().equal(Page_.pageId, sessionTopic.secondPageId).build().findFirst()
                         val paras = paraBox.query().equal(Para_.pageId, secondPage!!.pageId).build().find()
+                        val progress2 = progressBox.query().equal(PageCumulativeProgress_.pageId, secondPage.pageId).build().findFirst()
+                        progressBox.remove(progress2)
                         paraBox.remove(paras)
                         pageBox.remove(secondPage)
                     }
-                    sessionTopicBox.remove(topicSectionModel.topicObId)
+                    sessionTopicBox.remove(sessionTopic)
+                    sectionBox.remove(section)
                     loadTopics(sessionId)
                     return@setOnMenuItemClickListener true
                 }

@@ -2,25 +2,27 @@ package com.poc.studytracker.subjects.uicontrollers
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.poc.corea.models.session.Session
-import com.poc.corea.models.session.Session_
-import com.poc.corea.models.subjects.Subject
+import com.poc.corea.models.session.*
+import com.poc.corea.models.subjects.*
 import com.poc.studytracker.R
 import com.poc.studytracker.common.adapter.OnItemClickListener
 import com.poc.studytracker.common.adapter.VerticalSpacingItemDecoration
 import com.poc.studytracker.common.objectbox.ObjectBox
 import com.poc.studytracker.common.uicontrollers.MainActivity
 import com.poc.studytracker.databinding.FragmentSubjectsBinding
+import com.poc.studytracker.sessions.models.TopicSectionModel
 import com.poc.studytracker.subjects.adapters.SubjectsAdapter
 import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -143,7 +145,78 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemLongClickListener(pos: Int, view: View?) {
+        val popUpMenu = PopupMenu(context, view)
+        popUpMenu.inflate(R.menu.item_delete_menu)
+        popUpMenu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.deleteItem -> {
+                    Thread(Runnable {
+                        val sessionBox  = ObjectBox.store.boxFor(Session::class.java)
+                        val sectionBox = ObjectBox.store.boxFor(Section::class.java)
+                        val pageBox = ObjectBox.store.boxFor(Page::class.java)
+                        val paraBox = ObjectBox.store.boxFor(Para::class.java)
+                        val sessionTopicBox = ObjectBox.store.boxFor(SessionTopic::class.java)
+                        val progressBox = ObjectBox.store.boxFor(PageCumulativeProgress::class.java)
+                        val assessmentBox = ObjectBox.store.boxFor(SessionAssessment::class.java)
+                        val sessionList = sessionBox.query().equal(Session_.subjectId, subjectsAdapter.getItem(pos).subjectId).build().find()
+                        val sectionList = sectionBox.query().equal(Section_.subjectId, subjectsAdapter.getItem(pos).subjectId).build().find()
+                        val sessList = ArrayList<Session>()
+                        val topList = ArrayList<SessionTopic>()
+                        val pageList = ArrayList<Page>()
+                        val progressList = ArrayList<PageCumulativeProgress>()
+                        val paraList = ArrayList<Para>()
+                        val assessmentList = ArrayList<SessionAssessment>()
 
+                        if(!sessionList.isEmpty()) {
+                            for (session in sessionList) {
+                                val topicList = sessionTopicBox.query()
+                                    .equal(SessionTopic_.sessionId, session.sessionId).build().find()
+                                if(!topicList.isEmpty()) {
+                                    for (topic in topicList) {
+                                        val firstPage = pageBox.query().equal(Page_.pageId, topic.firstPageId).build().findFirst()
+                                        val paras = paraBox.query().equal(Para_.pageId, firstPage!!.pageId).build().find()
+                                        val progress = progressBox.query().equal(PageCumulativeProgress_.pageId, firstPage.pageId).build().findFirst()
+                                        pageList.add(firstPage)
+                                        paraList.addAll(paras)
+                                        progressList.add(progress!!)
+                                        if (!TextUtils.isEmpty(topic.secondPageId)) {
+                                            val secondPage = pageBox.query().equal(Page_.pageId, topic.secondPageId).build().findFirst()
+                                            val paras2 = paraBox.query().equal(Para_.pageId, secondPage!!.pageId).build().find()
+                                            val progress2 = progressBox.query().equal(PageCumulativeProgress_.pageId, secondPage.pageId).build().findFirst()
+                                            pageList.add(secondPage)
+                                            paraList.addAll(paras2)
+                                            progressList.add(progress2!!)
+                                        }
+                                    }
+                                    topList.addAll(topicList)
+                                }
+                                if(session.isSessionAssessed) {
+                                    val sessionAssessment = assessmentBox.query().equal(SessionAssessment_.sessionId, session.sessionId).build().findFirst()
+                                    assessmentList.add(sessionAssessment!!)
+                                }
+                            }
+                            sessList.addAll(sessionList)
+                        }
+                        ObjectBox.store.boxFor(Subject::class.java).remove(subjectsAdapter.getItem(pos))
+                        sectionBox.remove(sectionList)
+                        sessionBox.remove(sessList)
+                        sessionTopicBox.remove(topList)
+                        pageBox.remove(pageList)
+                        progressBox.remove(progressList)
+                        paraBox.remove(paraList)
+                        assessmentBox.remove(assessmentList)
+                        requireActivity().runOnUiThread(Runnable {
+                            loadSubjects()
+                        })
+
+                    }).start()
+
+                    return@setOnMenuItemClickListener true
+                }
+                else -> return@setOnMenuItemClickListener false
+            }
+        }
+        popUpMenu.show()
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {
