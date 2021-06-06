@@ -187,6 +187,9 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
 
     }
 
+    override fun onItemLongClickListener(pos: Int, view: View) {
+    }
+
     override fun onButtonClickOnItem(identifier: Int, pos: Int) = Unit
 
     private fun initializeEditorTools() {

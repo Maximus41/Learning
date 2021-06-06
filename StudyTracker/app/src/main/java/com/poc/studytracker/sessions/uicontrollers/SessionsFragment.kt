@@ -113,6 +113,10 @@ class SessionsFragment : Fragment(), OnItemClickListener {
         NavHostFragment.findNavController(this).navigate(R.id.updateSessionFragment, bundle)
     }
 
+    override fun onItemLongClickListener(pos: Int, view: View) {
+
+    }
+
     private fun stopSessionDialog(currentSession: Session) {
         AlertDialog.Builder(context)
                 .setMessage("Are you sure you want to stop the session?")

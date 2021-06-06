@@ -107,6 +107,10 @@ class SubjectDetailsFragment : Fragment(), OnItemClickListener {
                 })
     }
 
+    override fun onItemLongClickListener(pos: Int, view: View) {
+
+    }
+
     private fun displayParagraphs(pageModel: SubjectPageModel, paraList: List<Para>) {
         val dialogView = LayoutInflater.from(context).inflate(
                 R.layout.dialog_display_paragraphs,
