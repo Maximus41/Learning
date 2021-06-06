@@ -6,6 +6,8 @@ public class TopicSectionModel implements BaseExpandableListAdapter.ExpandableLi
 
     private String sectionTitle;
     private String sectionId;
+    private long topicObId;
+    private String topicId;
 
     @Override
     public int getType() {
@@ -32,5 +34,21 @@ public class TopicSectionModel implements BaseExpandableListAdapter.ExpandableLi
 
     public void setSectionId(String sectionId) {
         this.sectionId = sectionId;
+    }
+
+    public long getTopicObId() {
+        return topicObId;
+    }
+
+    public void setTopicObId(long topicObId) {
+        this.topicObId = topicObId;
+    }
+
+    public String getTopicId() {
+        return topicId;
+    }
+
+    public void setTopicId(String topicId) {
+        this.topicId = topicId;
     }
 }

@@ -142,6 +142,10 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         NavHostFragment.findNavController(this).navigate(R.id.subjectDetailsFragment, bundle)
     }
 
+    override fun onItemLongClickListener(pos: Int, view: View?) {
+
+    }
+
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {
         when(identifier) {
             SubjectsAdapter.GOTO_SESSION_BTN -> {

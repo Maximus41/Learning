@@ -118,6 +118,8 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
                     val topicSectionModel = TopicSectionModel()
                     topicSectionModel.sectionTitle = sessionTopic.sectionTitle
                     topicSectionModel.setSectionId(sessionTopic.sectionId)
+                    topicSectionModel.topicId = sessionTopic.topicId
+                    topicSectionModel.topicObId = sessionTopic.obId
                     listItems.add(topicSectionModel)
 
                     if(!TextUtils.isEmpty(sessionTopic.firstPageId)) {
@@ -360,6 +362,37 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
     override fun onItemClick(pos: Int) {
         val topicPageModel = editSessionListAdapter.items[pos] as TopicPageModel
         showParagraphCreateDialog(topicPageModel.sessionTopicId, topicPageModel.objectId)
+    }
+
+    override fun onItemLongClickListener(pos: Int, view: View) {
+        val popUpMenu = PopupMenu(context, view)
+        popUpMenu.inflate(R.menu.item_delete_menu)
+        popUpMenu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.deleteItem -> {
+                    val sessionTopicBox = ObjectBox.store.boxFor(SessionTopic::class.java)
+                    val pageBox = ObjectBox.store.boxFor(Page::class.java)
+                    val paraBox = ObjectBox.store.boxFor(Para::class.java)
+                    val topicSectionModel = editSessionListAdapter.getItem(pos) as TopicSectionModel
+                    val sessionTopic = sessionTopicBox.get(topicSectionModel.topicObId)
+                    val firstPage = pageBox.query().equal(Page_.pageId, sessionTopic.firstPageId).build().findFirst()
+                    val paras = paraBox.query().equal(Para_.pageId, firstPage!!.pageId).build().find()
+                    paraBox.remove(paras)
+                    pageBox.remove(firstPage)
+                    if(!TextUtils.isEmpty(sessionTopic.secondPageId)) {
+                        val secondPage = pageBox.query().equal(Page_.pageId, sessionTopic.secondPageId).build().findFirst()
+                        val paras = paraBox.query().equal(Para_.pageId, secondPage!!.pageId).build().find()
+                        paraBox.remove(paras)
+                        pageBox.remove(secondPage)
+                    }
+                    sessionTopicBox.remove(topicSectionModel.topicObId)
+                    loadTopics(sessionId)
+                    return@setOnMenuItemClickListener true
+                }
+                else -> return@setOnMenuItemClickListener false
+            }
+        }
+        popUpMenu.show()
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {

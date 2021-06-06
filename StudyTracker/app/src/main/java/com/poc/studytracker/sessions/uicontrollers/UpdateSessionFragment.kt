@@ -34,7 +34,6 @@ import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import kotlin.math.roundToInt
 
 class UpdateSessionFragment : Fragment(), OnItemClickListener {
 
@@ -120,6 +119,10 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(pos: Int) {
+    }
+
+    override fun onItemLongClickListener(pos: Int, view: View) {
+
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,7 +57,13 @@ public class EditSessionListAdapter extends BaseExpandableListAdapter<RecyclerVi
                 TopicSectionViewHolder topicSectionViewHolder = (TopicSectionViewHolder) holder;
                 topicSectionViewHolder.expandBtn.setOnClickListener(new ExpandListListener(position, listItem.getObjectId()));
                 topicSectionViewHolder.topicSectionTitle.setText(topicSectionModel.getSectionTitle());
-//                topicSectionViewHolder.topicSectionTitle.setSelected(true);
+                topicSectionViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        mListener.onItemLongClickListener(position, v);
+                        return true;
+                    }
+                });
                 break;
             case CHILD_TYPE:
                 TopicPageModel topicPageModel = (TopicPageModel) listItem;
