@@ -174,7 +174,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
     fun showDialog() {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
+        dialog.setCancelable(true)
         dialog.setContentView(R.layout.dialog_create_session_topic)
         val sectionTitle = dialog.findViewById(R.id.topicSectionTitle) as AutoCompleteTextView
         val firstPageTitle = dialog.findViewById(R.id.topicFirstPageTitle) as AutoCompleteTextView
@@ -199,7 +199,7 @@ class EditSessionFragment : Fragment() , OnItemClickListener{
             return
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
+        dialog.setCancelable(true)
         dialog.setContentView(R.layout.dialog_create_paras)
         val para1 = dialog.findViewById(R.id.para1) as EditText
         val para2 = dialog.findViewById(R.id.para2) as EditText

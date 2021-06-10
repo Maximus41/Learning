@@ -21,14 +21,36 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ImageButton
-            android:id="@+id/btnGotoSessions"
+        <FrameLayout
             android:layout_width="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/btnGotoSummary"
             android:layout_height="match_parent"
-            android:src="@drawable/session_selector"
-            android:background="@android:color/transparent"
-            android:padding="8dp"/>
+            app:layout_constraintEnd_toStartOf="@id/btnGotoSummary">
+
+
+            <ImageButton
+                android:id="@+id/btnGotoSessions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/session_selector"
+                android:background="@android:color/transparent"
+                android:padding="8dp"/>
+
+
+            <TextView
+                android:id="@+id/sessionCount"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/session_badge_selector"
+                android:layout_gravity="top|right"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textSize="8sp"
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="2dp"/>
+
+        </FrameLayout>
 
         <Button
             android:id="@+id/btnGotoSummary"
