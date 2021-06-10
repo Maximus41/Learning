@@ -24,6 +24,7 @@ import com.poc.studytracker.common.uicontrollers.MainActivity
 import com.poc.studytracker.databinding.FragmentSubjectsBinding
 import com.poc.studytracker.sessions.models.TopicSectionModel
 import com.poc.studytracker.subjects.adapters.SubjectsAdapter
+import com.poc.studytracker.subjects.models.SubjectUiModel
 import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -94,8 +95,25 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
     }
 
     private fun loadSubjects() {
+        val sessionBox = ObjectBox.store.boxFor(Session::class.java)
         val disposable = RxQuery.single(ObjectBox.store.boxFor(Subject::class.java).query().build())
                 .subscribeOn(Schedulers.io())
+                .map {
+                    val itemList = ArrayList<SubjectUiModel>()
+                    for(subject in it) {
+                        val subjectUiModel = SubjectUiModel()
+                        subjectUiModel.noOfSessions = sessionBox.query().equal(Session_.subjectId, subject.subjectId)
+                                .and().notEqual(Session_.startedOn, 0)
+                                .build().count()
+                        subjectUiModel.isLastSessionActive = sessionBox.query().equal(Session_.subjectId, subject.subjectId)
+                                .and().equal(Session_.isSessionActive, true)
+                                .build()
+                                .findFirst() != null
+                        subjectUiModel.subject = subject
+                        itemList.add(subjectUiModel)
+                    }
+                    return@map itemList
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(Consumer {
                     subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
