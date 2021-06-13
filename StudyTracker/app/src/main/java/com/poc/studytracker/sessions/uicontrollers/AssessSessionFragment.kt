@@ -73,9 +73,15 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
         val contentTypeface = getContentface()
         binding.sessionSummary.headingTypeface = headingTypeface
         binding.sessionSummary.contentTypeface = contentTypeface
+        binding.questions.headingTypeface = headingTypeface
+        binding.questions.contentTypeface = contentTypeface
+        binding.todos.headingTypeface = headingTypeface
+        binding.todos.contentTypeface = contentTypeface
         binding.planning.headingTypeface = headingTypeface
         binding.planning.contentTypeface = contentTypeface
         binding.sessionSummary.setNormalTextSize(16)
+        binding.planning.setNormalTextSize(16)
+        binding.questions.setNormalTextSize(16)
         binding.planning.setNormalTextSize(16)
         initializeEditorTools()
         assessmentAdapter = AssessPageContentListAdapter(this)
@@ -107,6 +113,8 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
                         binding.tools.visibility = View.GONE
                         binding.sessionSummary.visibility = View.GONE
                         binding.planning.visibility = View.GONE
+                        binding.questions.visibility = View.GONE
+                        binding.todos.visibility = View.GONE
                     }
                 })
     }
@@ -123,8 +131,12 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
                 .subscribe(Consumer {
                     binding.viewSummary.visibility = View.VISIBLE
                     binding.viewPlanning.visibility = View.VISIBLE
+                    binding.viewQuestions.visibility = View.VISIBLE
+                    binding.viewTodo.visibility = View.VISIBLE
                     binding.viewSummary.text = Html.fromHtml(it[0].sessionSummary)
                     binding.viewPlanning.text = Html.fromHtml(it[0].nextSessionPlan)
+                    binding.viewQuestions.text = Html.fromHtml(it[0].questions ?: "...")
+                    binding.viewTodo.text = Html.fromHtml(it[0].todos ?: "...")
                 })
     }
 
@@ -264,8 +276,12 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
     private fun getEditor() : Editor {
         return if(binding.sessionSummary.hasFocus())
             binding.sessionSummary
-        else
+        else if(binding.planning.hasFocus())
             binding.planning
+        else if(binding.questions.hasFocus())
+            binding.questions
+        else
+            binding.todos
     }
 
     private fun submitAssessment() {
@@ -274,6 +290,8 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
             assessment.sessionId = sessionId
             assessment.sessionSummary = binding.sessionSummary.contentAsHTML
             assessment.nextSessionPlan = binding.planning.contentAsHTML
+            assessment.questions = binding.questions.contentAsHTML
+            assessment.todos = binding.todos.contentAsHTML
             val id = ObjectBox.store.boxFor(SessionAssessment::class.java).put(assessment)
             if(id > 0L) {
                 session.isSessionAssessed = true
@@ -287,8 +305,8 @@ class AssessSessionFragment : Fragment() , OnItemClickListener {
     }
 
     private fun validateAssessment(): Boolean {
-        if(TextUtils.isEmpty(binding.sessionSummary.contentAsHTML) || TextUtils.isEmpty(binding.planning.contentAsHTML)) {
-            Toast.makeText(context, "Session summary/planning cannot be empty", Toast.LENGTH_SHORT).show()
+        if(TextUtils.isEmpty(binding.sessionSummary.contentAsHTML) || TextUtils.isEmpty(binding.planning.contentAsHTML) || TextUtils.isEmpty(binding.questions.contentAsHTML) || TextUtils.isEmpty(binding.todos.contentAsHTML)) {
+            Toast.makeText(context, "Assessment fields cannot be empty", Toast.LENGTH_SHORT).show()
             return false
         }
         return true

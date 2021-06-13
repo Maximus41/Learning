@@ -16,6 +16,8 @@ public class SessionAssessment {
     private String assessmentId = UUID.randomUUID().toString();
     public String sessionSummary;
     public String nextSessionPlan;
+    public String questions;
+    public String todos;
 
     public String getAssessmentId() {
         return assessmentId;
