@@ -684,7 +684,7 @@
     },
     {
       "id": "11:311134298017441292",
-      "lastPropertyId": "5:4465480188595396775",
+      "lastPropertyId": "7:6640878649363767475",
       "name": "SessionAssessment",
       "properties": [
         {
@@ -713,6 +713,16 @@
         {
           "id": "5:4465480188595396775",
           "name": "nextSessionPlan",
+          "type": 9
+        },
+        {
+          "id": "6:1490184441841525119",
+          "name": "questions",
+          "type": 9
+        },
+        {
+          "id": "7:6640878649363767475",
+          "name": "todos",
           "type": 9
         }
       ],
