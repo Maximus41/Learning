@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".common.uicontrollers.MainActivity"
+        tools:context="in.agn.studytracker.common.uicontrollers.MainActivity"
         android:background="@android:color/white">
 
         <androidx.appcompat.widget.Toolbar

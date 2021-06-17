@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".subjects.uicontrollers.SubjectsFragment"
+        tools:context="in.agn.studytracker.subjects.uicontrollers.SubjectsFragment"
         android:layout_margin="16dp">
 
         <androidx.recyclerview.widget.RecyclerView
