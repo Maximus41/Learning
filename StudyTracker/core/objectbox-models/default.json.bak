@@ -222,7 +222,7 @@
     },
     {
       "id": "8:2239947456711626673",
-      "lastPropertyId": "12:5384753310658061416",
+      "lastPropertyId": "13:8423740030258848198",
       "name": "Session",
       "properties": [
         {
@@ -253,22 +253,26 @@
         {
           "id": "5:3515352936301619888",
           "name": "sessionCreatedOn",
-          "type": 9
+          "type": 6,
+          "flags": 4
         },
         {
           "id": "6:6699096104806052553",
           "name": "sessionStartedOn",
-          "type": 9
+          "type": 6,
+          "flags": 4
         },
         {
           "id": "7:8420732502000577552",
           "name": "sessionExpiresOn",
-          "type": 9
+          "type": 6,
+          "flags": 4
         },
         {
           "id": "8:4082820440317624731",
           "name": "sessionEndedOn",
-          "type": 9
+          "type": 6,
+          "flags": 4
         },
         {
           "id": "9:2376310296918681333",
@@ -297,6 +301,11 @@
         {
           "id": "12:5384753310658061416",
           "name": "subjectId",
+          "type": 9
+        },
+        {
+          "id": "13:8423740030258848198",
+          "name": "sessionTitle",
           "type": 9
         }
       ],
