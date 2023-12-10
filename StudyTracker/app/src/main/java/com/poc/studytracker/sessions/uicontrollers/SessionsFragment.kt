@@ -70,12 +70,11 @@ class SessionsFragment : Fragment(), OnItemClickListener {
     }
 
     private fun createFirstSection(sessionId : String, sectionTitle : String) {
-        val section = Section()
+        /*val section = Section()
         val subjectSection = SubjectSection()
         val pages = Pages()
         section.pages = pages
-        section.sectionId = UUID.randomUUID().toString()
-        section.
+        section.sectionId = UUID.randomUUID().toString()*/
     }
 
     private fun gotoEditSession() {
