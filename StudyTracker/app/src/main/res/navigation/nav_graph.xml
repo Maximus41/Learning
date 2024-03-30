@@ -7,26 +7,26 @@
 
     <fragment
         android:id="@+id/subjectsFragment"
-        android:name="in.agn.studytracker.subjects.uicontrollers.SubjectsFragment"
+        android:name="com.agn.studytracker.subjects.uicontrollers.SubjectsFragment"
         android:label="SubjectsFragment" />
     <fragment
         android:id="@+id/sessionsFragment"
-        android:name="in.agn.studytracker.sessions.uicontrollers.SessionsFragment"
+        android:name="com.agn.studytracker.sessions.uicontrollers.SessionsFragment"
         android:label="SessionsFragment" />
     <fragment
         android:id="@+id/editSessionFragment"
-        android:name="in.agn.studytracker.sessions.uicontrollers.EditSessionFragment"
+        android:name="com.agn.studytracker.sessions.uicontrollers.EditSessionFragment"
         android:label="EditSessionFragment" />
     <fragment
         android:id="@+id/updateSessionFragment"
-        android:name="in.agn.studytracker.sessions.uicontrollers.UpdateSessionFragment"
+        android:name="com.agn.studytracker.sessions.uicontrollers.UpdateSessionFragment"
         android:label="UpdateSessionFragment" />
     <fragment
         android:id="@+id/subjectDetailsFragment"
-        android:name="in.agn.studytracker.subjects.uicontrollers.SubjectDetailsFragment"
+        android:name="com.agn.studytracker.subjects.uicontrollers.SubjectDetailsFragment"
         android:label="SubjectDetailsFragment" />
     <fragment
         android:id="@+id/assessSessionFragment"
-        android:name="in.agn.studytracker.sessions.uicontrollers.AssessSessionFragment"
+        android:name="com.agn.studytracker.sessions.uicontrollers.AssessSessionFragment"
         android:label="AssessSessionFragment" />
 </navigation>
