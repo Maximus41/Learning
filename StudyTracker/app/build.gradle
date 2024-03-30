@@ -7,7 +7,7 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        applicationId "com.poc.studytracker"
+        applicationId "com.agn.studytracker"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1
@@ -33,7 +33,7 @@ android {
      buildFeatures {
          dataBinding true
     }
-    namespace 'com.poc.studytracker'
+    namespace 'com.agn.studytracker'
 }
 
 dependencies {

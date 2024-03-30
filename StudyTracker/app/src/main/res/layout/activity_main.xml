@@ -10,13 +10,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".common.uicontrollers.MainActivity">
+        tools:context="in.agn.studytracker.common.uicontrollers.MainActivity"
+        android:background="@android:color/white">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:navigationIcon="@drawable/arrow_key_left"
+            android:background="@color/primary"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </androidx.appcompat.widget.Toolbar>
 
         <fragment
             android:id="@+id/fragment"

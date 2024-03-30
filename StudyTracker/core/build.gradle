@@ -45,7 +45,8 @@ dependencies {
     api 'io.objectbox:objectbox-rxjava:2.8.1'
     api 'io.reactivex.rxjava2:rxandroid:2.1.0'
     api 'io.reactivex.rxjava2:rxjava:2.2.10'
-    debugApi 'io.objectbox:objectbox-android-objectbrowser:2.8.1'
+//    debugApi 'io.objectbox:objectbox-android-objectbrowser:2.8.1'
+    api 'com.github.irshulx:laser-native-editor:3.0.3'
 }
 
 apply plugin: 'io.objectbox'
