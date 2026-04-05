@@ -7,8 +7,8 @@ import com.agn.corea.models.session.summary.SessionSummary
 interface SessionSummaryDao {
 
     @Insert
-    fun insert(summary: SessionSummary): Long
+    suspend fun insert(summary: SessionSummary): Long
 
     @Update
-    fun update(summary: SessionSummary)
+    suspend fun update(summary: SessionSummary)
 }

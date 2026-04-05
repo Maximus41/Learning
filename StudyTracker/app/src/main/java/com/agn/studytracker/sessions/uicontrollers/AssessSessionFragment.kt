@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.irshulx.Editor
@@ -26,9 +27,9 @@ import com.agn.studytracker.common.uicontrollers.MainActivity
 import com.agn.studytracker.databinding.FragmentAssessSessionBinding
 import com.agn.studytracker.sessions.adapters.AssessPageContentListAdapter
 import com.agn.studytracker.sessions.models.AssessmentPageContentModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class AssessSessionFragment : Fragment(), OnItemClickListener {
@@ -52,20 +53,11 @@ class AssessSessionFragment : Fragment(), OnItemClickListener {
         binding.pageContentList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.pageContentList.addItemDecoration(HorizontalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_8)!!))
         binding.btnAssess.setOnClickListener { submitAssessment() }
-        val headingTypeface = getHeadingTypeface()
-        val contentTypeface = getContentface()
-        binding.sessionSummary.headingTypeface = headingTypeface
-        binding.sessionSummary.contentTypeface = contentTypeface
-        binding.questions.headingTypeface = headingTypeface
-        binding.questions.contentTypeface = contentTypeface
-        binding.todos.headingTypeface = headingTypeface
-        binding.todos.contentTypeface = contentTypeface
-        binding.planning.headingTypeface = headingTypeface
-        binding.planning.contentTypeface = contentTypeface
-        binding.sessionSummary.setNormalTextSize(16)
-        binding.planning.setNormalTextSize(16)
-        binding.questions.setNormalTextSize(16)
-        binding.planning.setNormalTextSize(16)
+        val heading = getHeadingTypeface()
+        val content = getContentface()
+        listOf(binding.sessionSummary, binding.questions, binding.todos, binding.planning).forEach {
+            it.headingTypeface = heading; it.contentTypeface = content; it.setNormalTextSize(16)
+        }
         initializeEditorTools()
         assessmentAdapter = AssessPageContentListAdapter(this)
         binding.pageContentList.adapter = assessmentAdapter
@@ -73,64 +65,56 @@ class AssessSessionFragment : Fragment(), OnItemClickListener {
     }
 
     private fun loadSession(sessionId: String?) {
-        ObjectBox.get().sessionDao().getBySessionId(sessionId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                session = it[0]
-                val myactivity = activity as MainActivity
-                if (!session.isSessionAssessed) {
-                    myactivity.setTitle("Assess ${session.sessionTitle}")
-                    binding.btnAssess.visibility = View.VISIBLE
-                    loadSessionTopics()
-                } else {
-                    myactivity.setTitle("View Assessment")
-                    binding.pageContentList.visibility = View.GONE
-                    binding.btnAssess.visibility = View.GONE
-                    loadAssessments()
-                    binding.tools.visibility = View.GONE
-                    binding.sessionSummary.visibility = View.GONE
-                    binding.planning.visibility = View.GONE
-                    binding.questions.visibility = View.GONE
-                    binding.todos.visibility = View.GONE
-                }
-            })
+        viewLifecycleOwner.lifecycleScope.launch {
+            val sessions = withContext(Dispatchers.IO) { ObjectBox.get().sessionDao().getBySessionId(sessionId) }
+            session = sessions[0]
+            val myactivity = activity as MainActivity
+            if (!session.isSessionAssessed) {
+                myactivity.setTitle("Assess ${session.sessionTitle}")
+                binding.btnAssess.visibility = View.VISIBLE
+                loadSessionTopics()
+            } else {
+                myactivity.setTitle("View Assessment")
+                binding.pageContentList.visibility = View.GONE
+                binding.btnAssess.visibility = View.GONE
+                binding.tools.visibility = View.GONE
+                binding.sessionSummary.visibility = View.GONE
+                binding.planning.visibility = View.GONE
+                binding.questions.visibility = View.GONE
+                binding.todos.visibility = View.GONE
+                loadAssessments()
+            }
+        }
     }
 
     private fun loadAssessments() {
-        ObjectBox.get().sessionAssessmentDao().getBySessionId(sessionId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                binding.viewSummary.visibility = View.VISIBLE
-                binding.viewPlanning.visibility = View.VISIBLE
-                binding.viewQuestions.visibility = View.VISIBLE
-                binding.viewTodo.visibility = View.VISIBLE
-                binding.viewSummary.text = Html.fromHtml(it[0].sessionSummary, Html.FROM_HTML_MODE_COMPACT)
-                binding.viewPlanning.text = Html.fromHtml(it[0].nextSessionPlan, Html.FROM_HTML_MODE_COMPACT)
-                binding.viewQuestions.text = Html.fromHtml(it[0].questions ?: "...", Html.FROM_HTML_MODE_COMPACT)
-                binding.viewTodo.text = Html.fromHtml(it[0].todos ?: "...", Html.FROM_HTML_MODE_COMPACT)
-            })
+        viewLifecycleOwner.lifecycleScope.launch {
+            val assessments = withContext(Dispatchers.IO) { ObjectBox.get().sessionAssessmentDao().getBySessionId(sessionId) }
+            binding.viewSummary.visibility = View.VISIBLE
+            binding.viewPlanning.visibility = View.VISIBLE
+            binding.viewQuestions.visibility = View.VISIBLE
+            binding.viewTodo.visibility = View.VISIBLE
+            binding.viewSummary.text = Html.fromHtml(assessments[0].sessionSummary, Html.FROM_HTML_MODE_COMPACT)
+            binding.viewPlanning.text = Html.fromHtml(assessments[0].nextSessionPlan, Html.FROM_HTML_MODE_COMPACT)
+            binding.viewQuestions.text = Html.fromHtml(assessments[0].questions ?: "...", Html.FROM_HTML_MODE_COMPACT)
+            binding.viewTodo.text = Html.fromHtml(assessments[0].todos ?: "...", Html.FROM_HTML_MODE_COMPACT)
+        }
     }
 
     private fun loadSessionTopics() {
-        ObjectBox.get().sessionTopicDao().getBySessionId(sessionId)
-            .subscribeOn(Schedulers.io())
-            .map { topics ->
-                val pageContentList = ArrayList<AssessmentPageContentModel>()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val pageContentList = withContext(Dispatchers.IO) {
+                val topics = ObjectBox.get().sessionTopicDao().getBySessionId(sessionId)
+                val list = ArrayList<AssessmentPageContentModel>()
                 for (topic in topics) {
-                    if (!TextUtils.isEmpty(topic.firstPageId))
-                        pageContentList.add(createPageContent(topic.firstPageId, topic.firstPageTitle))
-                    if (!TextUtils.isEmpty(topic.secondPageId))
-                        pageContentList.add(createPageContent(topic.secondPageId, topic.secondPageTitle))
+                    if (!TextUtils.isEmpty(topic.firstPageId)) list.add(createPageContent(topic.firstPageId, topic.firstPageTitle))
+                    if (!TextUtils.isEmpty(topic.secondPageId)) list.add(createPageContent(topic.secondPageId, topic.secondPageTitle))
                 }
-                return@map pageContentList
+                list
             }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                assessmentAdapter.setmItems(it)
-                binding.pageContentList.adapter = assessmentAdapter
-            })
+            assessmentAdapter.setmItems(pageContentList)
+            binding.pageContentList.adapter = assessmentAdapter
+        }
     }
 
     private fun createPageContent(pageId: String, pageTitle: String): AssessmentPageContentModel {
@@ -139,13 +123,9 @@ class AssessSessionFragment : Fragment(), OnItemClickListener {
             pageContent.pageTitle = pageTitle
             val paraList = ObjectBox.get().paraDao().getByPageIdSync(pageId)
             if (paraList.isNotEmpty()) {
-                var count = 0
-                val sb = StringBuilder()
-                for (para in paraList) {
-                    count += 1
-                    sb.append("\n    $count -> ${para.paraTitle}")
+                pageContent.paraContent = buildString {
+                    paraList.forEachIndexed { i, para -> append("\n    ${i + 1} -> ${para.paraTitle}") }
                 }
-                pageContent.paraContent = sb.toString()
             }
         }
         return pageContent
@@ -173,31 +153,38 @@ class AssessSessionFragment : Fragment(), OnItemClickListener {
         binding.root.findViewById<AppCompatImageButton>(R.id.action_blockquote).setOnClickListener { getEditor().updateTextStyle(EditorTextStyle.BLOCKQUOTE) }
     }
 
-    private fun getEditor(): Editor =
-        when {
-            binding.sessionSummary.hasFocus() -> binding.sessionSummary
-            binding.planning.hasFocus() -> binding.planning
-            binding.questions.hasFocus() -> binding.questions
-            else -> binding.todos
-        }
+    private fun getEditor(): Editor = when {
+        binding.sessionSummary.hasFocus() -> binding.sessionSummary
+        binding.planning.hasFocus() -> binding.planning
+        binding.questions.hasFocus() -> binding.questions
+        else -> binding.todos
+    }
 
     private fun submitAssessment() {
         if (!validateAssessment()) return
-        val assessment = SessionAssessment()
-        assessment.sessionId = sessionId
-        assessment.sessionSummary = binding.sessionSummary.contentAsHTML
-        assessment.nextSessionPlan = binding.planning.contentAsHTML
-        assessment.questions = binding.questions.contentAsHTML
-        assessment.todos = binding.todos.contentAsHTML
-        val id = ObjectBox.get().sessionAssessmentDao().insert(assessment)
-        if (id > 0L) {
-            session.isSessionAssessed = true
-            ObjectBox.get().sessionDao().update(session)
-            Toast.makeText(context, "Assessment Submitted", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Assessment couldn't be submitted ! Please try again later", Toast.LENGTH_SHORT).show()
+        val assessment = SessionAssessment().apply {
+            sessionId = this@AssessSessionFragment.sessionId
+            sessionSummary = binding.sessionSummary.contentAsHTML
+            nextSessionPlan = binding.planning.contentAsHTML
+            questions = binding.questions.contentAsHTML
+            todos = binding.todos.contentAsHTML
         }
-        NavHostFragment.findNavController(this).popBackStack()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val id = withContext(Dispatchers.IO) {
+                val insertId = ObjectBox.get().sessionAssessmentDao().insert(assessment)
+                if (insertId > 0L) {
+                    session.isSessionAssessed = true
+                    ObjectBox.get().sessionDao().update(session)
+                }
+                insertId
+            }
+            if (id > 0L) {
+                Toast.makeText(context, "Assessment Submitted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Assessment couldn't be submitted! Please try again later", Toast.LENGTH_SHORT).show()
+            }
+            NavHostFragment.findNavController(this@AssessSessionFragment).popBackStack()
+        }
     }
 
     private fun validateAssessment(): Boolean {
@@ -211,21 +198,17 @@ class AssessSessionFragment : Fragment(), OnItemClickListener {
         return true
     }
 
-    fun getHeadingTypeface(): Map<Int, String> {
-        val typefaceMap: MutableMap<Int, String> = HashMap()
-        typefaceMap[Typeface.NORMAL] = "fonts/GreycliffCF-Bold.ttf"
-        typefaceMap[Typeface.BOLD] = "fonts/GreycliffCF-Heavy.ttf"
-        typefaceMap[Typeface.ITALIC] = "fonts/GreycliffCF-Heavy.ttf"
-        typefaceMap[Typeface.BOLD_ITALIC] = "fonts/GreycliffCF-Bold.ttf"
-        return typefaceMap
-    }
+    fun getHeadingTypeface(): Map<Int, String> = mapOf(
+        Typeface.NORMAL to "fonts/GreycliffCF-Bold.ttf",
+        Typeface.BOLD to "fonts/GreycliffCF-Heavy.ttf",
+        Typeface.ITALIC to "fonts/GreycliffCF-Heavy.ttf",
+        Typeface.BOLD_ITALIC to "fonts/GreycliffCF-Bold.ttf"
+    )
 
-    fun getContentface(): Map<Int, String> {
-        val typefaceMap: MutableMap<Int, String> = HashMap()
-        typefaceMap[Typeface.NORMAL] = "fonts/Lato-Medium.ttf"
-        typefaceMap[Typeface.BOLD] = "fonts/Lato-Bold.ttf"
-        typefaceMap[Typeface.ITALIC] = "fonts/Lato-MediumItalic.ttf"
-        typefaceMap[Typeface.BOLD_ITALIC] = "fonts/Lato-BoldItalic.ttf"
-        return typefaceMap
-    }
+    fun getContentface(): Map<Int, String> = mapOf(
+        Typeface.NORMAL to "fonts/Lato-Medium.ttf",
+        Typeface.BOLD to "fonts/Lato-Bold.ttf",
+        Typeface.ITALIC to "fonts/Lato-MediumItalic.ttf",
+        Typeface.BOLD_ITALIC to "fonts/Lato-BoldItalic.ttf"
+    )
 }

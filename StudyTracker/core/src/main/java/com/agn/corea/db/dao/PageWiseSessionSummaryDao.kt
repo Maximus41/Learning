@@ -7,5 +7,5 @@ import com.agn.corea.models.session.summary.PageWiseSessionSummary
 interface PageWiseSessionSummaryDao {
 
     @Insert
-    fun insert(summary: PageWiseSessionSummary): Long
+    suspend fun insert(summary: PageWiseSessionSummary): Long
 }

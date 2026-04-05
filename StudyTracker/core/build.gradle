@@ -40,15 +40,16 @@ dependencies {
     implementation libs.appcompat
     implementation libs.material
 
+    // Coroutines
+    api libs.coroutines.core
+
     // Room
     api libs.room.runtime
-    api libs.room.rxjava2
+    api libs.room.ktx
     kapt libs.room.compiler
 
     // Data
     implementation libs.gson
-    api libs.rxandroid
-    api libs.rxjava
 
     // UI
     api libs.laser.editor

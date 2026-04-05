@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agn.corea.models.session.Session
@@ -25,9 +26,9 @@ import com.agn.studytracker.common.uicontrollers.MainActivity
 import com.agn.studytracker.databinding.FragmentSubjectsBinding
 import com.agn.studytracker.subjects.adapters.SubjectsAdapter
 import com.agn.studytracker.subjects.models.SubjectUiModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class SubjectsFragment : Fragment(), OnItemClickListener {
@@ -40,23 +41,16 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate<FragmentSubjectsBinding>(
-            inflater,
-            R.layout.fragment_subjects, container, false
+            inflater, R.layout.fragment_subjects, container, false
         )
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.subjectsList.layoutManager = LinearLayoutManager(
-            context,
-            LinearLayoutManager.VERTICAL,
-            false
-        )
+        binding.subjectsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.subjectsList.addItemDecoration(
-            VerticalSpacingItemDecoration(
-                activity?.resources?.getDimensionPixelOffset(R.dimen.dp_3)!!
-            )
+            VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_3)!!)
         )
         binding.subjectsList.adapter = SubjectsAdapter(this)
         binding.createSubjectBtn.setOnClickListener {
@@ -74,72 +68,67 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        val myactivity = activity as MainActivity
-        myactivity.setTitle("Subjects")
+        (activity as MainActivity).setTitle("Subjects")
     }
 
     private fun createSubject(subject: String) {
-        val sub = Subject()
-        sub.subjectTitle = subject
-        sub.createdOn = System.currentTimeMillis()
-        ObjectBox.get().subjectDao().insert(sub)
-        loadSubjects()
+        val sub = Subject().apply {
+            subjectTitle = subject
+            createdOn = System.currentTimeMillis()
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            withContext(Dispatchers.IO) { ObjectBox.get().subjectDao().insert(sub) }
+            loadSubjects()
+        }
     }
 
     private fun loadSubjects() {
         val db = ObjectBox.get()
-        db.subjectDao().getAll()
-            .subscribeOn(Schedulers.io())
-            .map {
-                val itemList = ArrayList<SubjectUiModel>()
-                for (subject in it) {
-                    val subjectUiModel = SubjectUiModel()
-                    subjectUiModel.noOfSessions = db.sessionDao().countStartedBySubjectId(subject.subjectId)
-                    subjectUiModel.isLastSessionActive = db.sessionDao().getFirstActiveBySubjectIdSync(subject.subjectId) != null
-                    subjectUiModel.subject = subject
-                    itemList.add(subjectUiModel)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val items = withContext(Dispatchers.IO) {
+                db.subjectDao().getAll().map { subject ->
+                    SubjectUiModel().apply {
+                        noOfSessions = db.sessionDao().countStartedBySubjectId(subject.subjectId)
+                        isLastSessionActive = db.sessionDao().getFirstActiveBySubjectIdSync(subject.subjectId) != null
+                        this.subject = subject
+                    }
                 }
-                return@map itemList
             }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
-                subjectsAdapter.setmItems(it)
-                binding.subjectsList.adapter = subjectsAdapter
-            })
+            subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
+            subjectsAdapter.setmItems(ArrayList(items))
+            binding.subjectsList.adapter = subjectsAdapter
+        }
     }
 
     private fun countSessions(pos: Int) {
         val item: Subject = subjectsAdapter.getItem(pos)
-        ObjectBox.get().sessionDao().getBySubjectId(item.subjectId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                if (it == null || it.isEmpty())
-                    createFirstSession(item.subjectId)
-                gotoSession(item.subjectId)
-            })
+        viewLifecycleOwner.lifecycleScope.launch {
+            val sessions = withContext(Dispatchers.IO) { ObjectBox.get().sessionDao().getBySubjectId(item.subjectId) }
+            if (sessions.isEmpty()) createFirstSession(item.subjectId)
+            gotoSession(item.subjectId)
+        }
     }
 
-    private fun createFirstSession(subjectId: String): Long {
-        val session = Session()
-        session.subjectId = subjectId
-        session.createdOn = System.currentTimeMillis()
-        session.sessionSerialNo = 1
-        session.sessionTitle = "First Session"
-        return ObjectBox.get().sessionDao().insert(session)
+    private suspend fun createFirstSession(subjectId: String): Long {
+        val session = Session().apply {
+            this.subjectId = subjectId
+            createdOn = System.currentTimeMillis()
+            sessionSerialNo = 1
+            sessionTitle = "First Session"
+        }
+        return withContext(Dispatchers.IO) { ObjectBox.get().sessionDao().insert(session) }
     }
 
     private fun gotoSession(subjectId: String) {
-        val bundle = Bundle()
-        bundle.putString("subject_id", subjectId)
+        val bundle = Bundle().apply { putString("subject_id", subjectId) }
         NavHostFragment.findNavController(this).navigate(R.id.sessionsFragment, bundle)
     }
 
     override fun onItemClick(pos: Int) {
-        val bundle = Bundle()
-        bundle.putString("subject_id", subjectsAdapter.getItem(pos).subjectId)
-        bundle.putString("subject_name", subjectsAdapter.getItem(pos).subjectTitle)
+        val bundle = Bundle().apply {
+            putString("subject_id", subjectsAdapter.getItem(pos).subjectId)
+            putString("subject_name", subjectsAdapter.getItem(pos).subjectTitle)
+        }
         NavHostFragment.findNavController(this).navigate(R.id.subjectDetailsFragment, bundle)
     }
 
@@ -149,7 +138,7 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         popUpMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.deleteItem -> {
-                    Thread {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                         val db = ObjectBox.get()
                         val subjectId = subjectsAdapter.getItem(pos).subjectId
                         val sessionList = db.sessionDao().getBySubjectIdSync(subjectId)
@@ -160,32 +149,25 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
                         val paraList = ArrayList<Para>()
                         val assessmentList = ArrayList<SessionAssessment>()
 
-                        if (sessionList.isNotEmpty()) {
-                            for (session in sessionList) {
-                                val topicList = db.sessionTopicDao().getBySessionIdSync(session.sessionId)
-                                if (topicList.isNotEmpty()) {
-                                    for (topic in topicList) {
-                                        val firstPage = db.pageDao().getByPageIdSync(topic.firstPageId)
-                                        if (firstPage != null) {
-                                            pageList.add(firstPage)
-                                            paraList.addAll(db.paraDao().getByPageIdSync(firstPage.pageId))
-                                            db.pageCumulativeProgressDao().getByPageIdSync(firstPage.pageId)?.let { progressList.add(it) }
-                                        }
-                                        if (!TextUtils.isEmpty(topic.secondPageId)) {
-                                            val secondPage = db.pageDao().getByPageIdSync(topic.secondPageId)
-                                            if (secondPage != null) {
-                                                pageList.add(secondPage)
-                                                paraList.addAll(db.paraDao().getByPageIdSync(secondPage.pageId))
-                                                db.pageCumulativeProgressDao().getByPageIdSync(secondPage.pageId)?.let { progressList.add(it) }
-                                            }
-                                        }
-                                    }
-                                    topList.addAll(topicList)
+                        for (session in sessionList) {
+                            val topicList = db.sessionTopicDao().getBySessionIdSync(session.sessionId)
+                            for (topic in topicList) {
+                                db.pageDao().getByPageIdSync(topic.firstPageId)?.let { page ->
+                                    pageList.add(page)
+                                    paraList.addAll(db.paraDao().getByPageIdSync(page.pageId))
+                                    db.pageCumulativeProgressDao().getByPageIdSync(page.pageId)?.let { progressList.add(it) }
                                 }
-                                if (session.isSessionAssessed) {
-                                    db.sessionAssessmentDao().getBySessionIdSync(session.sessionId)?.let { assessmentList.add(it) }
+                                if (!TextUtils.isEmpty(topic.secondPageId)) {
+                                    db.pageDao().getByPageIdSync(topic.secondPageId)?.let { page ->
+                                        pageList.add(page)
+                                        paraList.addAll(db.paraDao().getByPageIdSync(page.pageId))
+                                        db.pageCumulativeProgressDao().getByPageIdSync(page.pageId)?.let { progressList.add(it) }
+                                    }
                                 }
                             }
+                            topList.addAll(topicList)
+                            if (session.isSessionAssessed)
+                                db.sessionAssessmentDao().getBySessionIdSync(session.sessionId)?.let { assessmentList.add(it) }
                         }
 
                         db.subjectDao().delete(subjectsAdapter.getItem(pos))
@@ -197,8 +179,8 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
                         db.paraDao().deleteList(paraList)
                         db.sessionAssessmentDao().deleteList(assessmentList)
 
-                        requireActivity().runOnUiThread { loadSubjects() }
-                    }.start()
+                        withContext(Dispatchers.Main) { loadSubjects() }
+                    }
                     return@setOnMenuItemClickListener true
                 }
                 else -> return@setOnMenuItemClickListener false

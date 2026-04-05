@@ -2,6 +2,7 @@
 agp                 = "8.5.2"
 kotlin              = "2.0.21"
 room                = "2.6.1"
+coroutines          = "1.8.1"
 benManes            = "0.51.0"
 
 # AndroidX
@@ -18,8 +19,6 @@ dagger              = "2.52"
 
 # Data
 gson                = "2.11.0"
-rxjava              = "2.2.21"
-rxandroid           = "2.1.1"
 
 # UI
 laserEditor         = "3.0.3"
@@ -40,7 +39,7 @@ legacy-support-v4               = { group = "androidx.legacy",                 n
 # Lifecycle
 lifecycle-viewmodel             = { group = "androidx.lifecycle",              name = "lifecycle-viewmodel",               version.ref = "lifecycle" }
 lifecycle-livedata              = { group = "androidx.lifecycle",              name = "lifecycle-livedata",                version.ref = "lifecycle" }
-lifecycle-runtime               = { group = "androidx.lifecycle",              name = "lifecycle-runtime",                 version.ref = "lifecycle" }
+lifecycle-runtime-ktx           = { group = "androidx.lifecycle",              name = "lifecycle-runtime-ktx",             version.ref = "lifecycle" }
 lifecycle-viewmodel-savedstate  = { group = "androidx.lifecycle",              name = "lifecycle-viewmodel-savedstate",    version.ref = "lifecycle" }
 
 # Navigation
@@ -50,6 +49,10 @@ navigation-ui                   = { group = "androidx.navigation",             n
 # Kotlin
 kotlin-stdlib                   = { group = "org.jetbrains.kotlin",            name = "kotlin-stdlib",                     version.ref = "kotlin" }
 
+# Coroutines
+coroutines-core                 = { group = "org.jetbrains.kotlinx",           name = "kotlinx-coroutines-core",           version.ref = "coroutines" }
+coroutines-android              = { group = "org.jetbrains.kotlinx",           name = "kotlinx-coroutines-android",        version.ref = "coroutines" }
+
 # DI
 dagger                          = { group = "com.google.dagger",               name = "dagger",                            version.ref = "dagger" }
 dagger-compiler                 = { group = "com.google.dagger",               name = "dagger-compiler",                   version.ref = "dagger" }
@@ -57,10 +60,8 @@ dagger-compiler                 = { group = "com.google.dagger",               n
 # Data
 gson                            = { group = "com.google.code.gson",            name = "gson",                              version.ref = "gson" }
 room-runtime                    = { group = "androidx.room",                   name = "room-runtime",                      version.ref = "room" }
-room-rxjava2                    = { group = "androidx.room",                   name = "room-rxjava2",                      version.ref = "room" }
+room-ktx                        = { group = "androidx.room",                   name = "room-ktx",                          version.ref = "room" }
 room-compiler                   = { group = "androidx.room",                   name = "room-compiler",                     version.ref = "room" }
-rxandroid                       = { group = "io.reactivex.rxjava2",            name = "rxandroid",                         version.ref = "rxandroid" }
-rxjava                          = { group = "io.reactivex.rxjava2",            name = "rxjava",                            version.ref = "rxjava" }
 
 # UI
 laser-editor                    = { group = "com.github.irshulx",              name = "laser-native-editor",               version.ref = "laserEditor" }

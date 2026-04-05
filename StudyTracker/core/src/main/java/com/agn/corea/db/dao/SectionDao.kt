@@ -2,17 +2,16 @@ package com.agn.corea.db.dao
 
 import androidx.room.*
 import com.agn.corea.models.subjects.Section
-import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SectionDao {
 
     @Query("SELECT * FROM sections WHERE subjectId = :subjectId")
-    fun getBySubjectId(subjectId: String?): Single<List<Section>>
+    suspend fun getBySubjectId(subjectId: String?): List<Section>
 
     @Query("SELECT * FROM sections WHERE subjectId = :subjectId")
-    fun observeBySubjectId(subjectId: String?): Flowable<List<Section>>
+    fun observeBySubjectId(subjectId: String?): Flow<List<Section>>
 
     @Query("SELECT * FROM sections WHERE subjectId = :subjectId")
     fun getBySubjectIdSync(subjectId: String): List<Section>
@@ -24,11 +23,11 @@ interface SectionDao {
     fun getByTitleAndSubjectSync(title: String, subjectId: String): Section?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(section: Section): Long
+    suspend fun insert(section: Section): Long
 
     @Update
-    fun update(section: Section)
+    suspend fun update(section: Section)
 
     @Delete
-    fun deleteList(sections: List<Section>)
+    suspend fun deleteList(sections: List<Section>)
 }

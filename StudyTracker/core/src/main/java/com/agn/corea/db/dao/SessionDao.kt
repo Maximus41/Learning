@@ -2,13 +2,12 @@ package com.agn.corea.db.dao
 
 import androidx.room.*
 import com.agn.corea.models.session.Session
-import io.reactivex.Single
 
 @Dao
 interface SessionDao {
 
     @Query("SELECT * FROM sessions WHERE subjectId = :subjectId")
-    fun getBySubjectId(subjectId: String?): Single<List<Session>>
+    suspend fun getBySubjectId(subjectId: String?): List<Session>
 
     @Query("SELECT * FROM sessions WHERE subjectId = :subjectId")
     fun getBySubjectIdSync(subjectId: String): List<Session>
@@ -20,17 +19,17 @@ interface SessionDao {
     fun getFirstActiveBySubjectIdSync(subjectId: String): Session?
 
     @Query("SELECT * FROM sessions WHERE sessionId = :sessionId")
-    fun getBySessionId(sessionId: String?): Single<List<Session>>
+    suspend fun getBySessionId(sessionId: String?): List<Session>
 
     @Insert
-    fun insert(session: Session): Long
+    suspend fun insert(session: Session): Long
 
     @Update
-    fun update(session: Session)
+    suspend fun update(session: Session)
 
     @Delete
-    fun delete(session: Session)
+    suspend fun delete(session: Session)
 
     @Delete
-    fun deleteList(sessions: List<Session>)
+    suspend fun deleteList(sessions: List<Session>)
 }

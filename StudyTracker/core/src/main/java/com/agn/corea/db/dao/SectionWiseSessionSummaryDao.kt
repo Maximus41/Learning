@@ -7,5 +7,5 @@ import com.agn.corea.models.session.summary.SectionWiseSessionSummary
 interface SectionWiseSessionSummaryDao {
 
     @Insert
-    fun insert(summary: SectionWiseSessionSummary): Long
+    suspend fun insert(summary: SectionWiseSessionSummary): Long
 }

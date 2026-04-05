@@ -2,7 +2,6 @@ package com.agn.corea.db.dao
 
 import androidx.room.*
 import com.agn.corea.models.subjects.Page
-import io.reactivex.Single
 
 @Dao
 interface PageDao {
@@ -17,14 +16,14 @@ interface PageDao {
     fun getByTitleAndSectionSync(title: String, sectionId: String): Page?
 
     @Insert
-    fun insert(page: Page): Long
+    suspend fun insert(page: Page): Long
 
     @Update
-    fun update(page: Page)
+    suspend fun update(page: Page)
 
     @Delete
-    fun delete(page: Page)
+    suspend fun delete(page: Page)
 
     @Delete
-    fun deleteList(pages: List<Page>)
+    suspend fun deleteList(pages: List<Page>)
 }

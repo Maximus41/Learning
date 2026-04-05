@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agn.corea.constants.GlobalConstants
 import com.agn.corea.constants.PageActionStatus
@@ -23,9 +24,9 @@ import com.agn.studytracker.databinding.FragmentUpdateSessionBinding
 import com.agn.studytracker.sessions.adapters.UpdateSessionAdapter
 import com.agn.studytracker.sessions.models.UpdateTopicPageModel
 import com.agn.studytracker.sessions.models.UpdateTopicSectionModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UpdateSessionFragment : Fragment(), OnItemClickListener {
 
@@ -34,7 +35,7 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
     lateinit var pageProgressMap: LinkedHashMap<String, PageCumulativeProgress>
     lateinit var session: Session
     private var sessionId: String? = ""
-    private var sessionPages = ArrayList<String>()
+    private val sessionPages = ArrayList<String>()
     private var storyPointsCoveredInThisSession = 0.0f
 
     override fun onCreateView(
@@ -52,162 +53,128 @@ class UpdateSessionFragment : Fragment(), OnItemClickListener {
     }
 
     private fun loadSession(sessionId: String?) {
-        ObjectBox.get().sessionDao().getBySessionId(sessionId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                session = it[0]
-                binding.updateSessionList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.updateSessionList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
-                updateSessionListAdapter = UpdateSessionAdapter(this)
-                binding.updateSessionList.adapter = updateSessionListAdapter
-                val myactivity = activity as MainActivity
-                myactivity.setTitle("Update ${session.sessionTitle}")
-                loadTopics(sessionId, (!session.isSessionActive || session.hasSessionEnded || session.hasSessionExpired))
-            })
+        viewLifecycleOwner.lifecycleScope.launch {
+            val sessions = withContext(Dispatchers.IO) { ObjectBox.get().sessionDao().getBySessionId(sessionId) }
+            session = sessions[0]
+            binding.updateSessionList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.updateSessionList.addItemDecoration(VerticalSpacingItemDecoration(activity?.resources?.getDimensionPixelOffset(R.dimen.dp_1)!!))
+            updateSessionListAdapter = UpdateSessionAdapter(this@UpdateSessionFragment)
+            binding.updateSessionList.adapter = updateSessionListAdapter
+            (activity as MainActivity).setTitle("Update ${session.sessionTitle}")
+            loadTopics(sessionId, (!session.isSessionActive || session.hasSessionEnded || session.hasSessionExpired))
+        }
     }
 
     private fun loadTopics(sessionId: String?, isUpdateDisabled: Boolean) {
-        ObjectBox.get().sessionTopicDao().getBySessionId(sessionId)
-            .subscribeOn(Schedulers.io())
-            .map { topics ->
-                val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
-                for (sessionTopic in topics) {
-                    val topicSectionModel = UpdateTopicSectionModel()
-                    topicSectionModel.sectionTitle = sessionTopic.sectionTitle
-                    topicSectionModel.setSectionId(sessionTopic.sectionId)
-                    listItems.add(topicSectionModel)
-
-                    if (!TextUtils.isEmpty(sessionTopic.firstPageId)) {
-                        val firstPageModel = UpdateTopicPageModel()
-                        firstPageModel.pageTitle = sessionTopic.firstPageTitle
-                        firstPageModel.setPageId(sessionTopic.firstPageId)
-                        firstPageModel.setSectionId(sessionTopic.sectionId)
-                        firstPageModel.isActionsFreezed = isUpdateDisabled
-                        listItems.add(firstPageModel)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val listItems = withContext(Dispatchers.IO) {
+                val topics = ObjectBox.get().sessionTopicDao().getBySessionId(sessionId)
+                val items = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
+                for (topic in topics) {
+                    items.add(UpdateTopicSectionModel().apply {
+                        sectionTitle = topic.sectionTitle
+                        setSectionId(topic.sectionId)
+                    })
+                    if (!TextUtils.isEmpty(topic.firstPageId)) {
+                        items.add(UpdateTopicPageModel().apply {
+                            pageTitle = topic.firstPageTitle; setPageId(topic.firstPageId)
+                            setSectionId(topic.sectionId); isActionsFreezed = isUpdateDisabled
+                        })
+                        synchronized(sessionPages) { sessionPages.add(topic.firstPageId) }
                     }
-
-                    if (!TextUtils.isEmpty(sessionTopic.secondPageId)) {
-                        val secondPageModel = UpdateTopicPageModel()
-                        secondPageModel.pageTitle = sessionTopic.secondPageTitle
-                        secondPageModel.setPageId(sessionTopic.secondPageId)
-                        secondPageModel.setSectionId(sessionTopic.sectionId)
-                        secondPageModel.isActionsFreezed = isUpdateDisabled
-                        listItems.add(secondPageModel)
-                    }
-                    synchronized(sessionPages) {
-                        sessionPages.add(sessionTopic.firstPageId)
-                        sessionPages.add(sessionTopic.secondPageId)
+                    if (!TextUtils.isEmpty(topic.secondPageId)) {
+                        items.add(UpdateTopicPageModel().apply {
+                            pageTitle = topic.secondPageTitle; setPageId(topic.secondPageId)
+                            setSectionId(topic.sectionId); isActionsFreezed = isUpdateDisabled
+                        })
+                        synchronized(sessionPages) { sessionPages.add(topic.secondPageId) }
                     }
                 }
-                return@map listItems
+                items
             }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                updateSessionListAdapter.setmItems(it)
-                loadPageProgress(sessionPages)
-            })
+            updateSessionListAdapter.setmItems(listItems)
+            loadPageProgress(sessionPages)
+        }
     }
 
     override fun onItemClick(pos: Int) {}
-
     override fun onItemLongClickListener(pos: Int, view: View) {}
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {
         val db = ObjectBox.get()
         val pageId = updateSessionListAdapter.getItem(pos).objectId
         val page = db.pageDao().getByPageIdSync(pageId) ?: return
-        val pageStoryPoints = page.pageStoryPoints
         val progress: PageCumulativeProgress = pageProgressMap[pageId] ?: return
-        progress.pageId = pageId
         if (Math.round((progress.totalStoryPointsCovered / page.pageStoryPoints) * 100) == 100) {
             Toast.makeText(context, "Can't update 100% learnt Topic", Toast.LENGTH_SHORT).show()
             return
         }
         when (identifier) {
-            UpdateSessionAdapter.ACTION_READ -> {
-                if (progress.readStatus == PageActionStatus.PENDING) {
-                    progress.readStatus = PageActionStatus.COMPLETE
-                    progress.readStatusRecordedOn = System.currentTimeMillis()
-                    progress.totalStoryPointsCovered += pageStoryPoints * 0.1f
-                }
+            UpdateSessionAdapter.ACTION_READ -> if (progress.readStatus == PageActionStatus.PENDING) {
+                progress.readStatus = PageActionStatus.COMPLETE
+                progress.readStatusRecordedOn = System.currentTimeMillis()
+                progress.totalStoryPointsCovered += page.pageStoryPoints * 0.1f
             }
-            UpdateSessionAdapter.ACTION_TAKE_NOTES -> {
-                if (progress.notesTakenStatus == PageActionStatus.PENDING) {
-                    progress.notesTakenStatus = PageActionStatus.COMPLETE
-                    progress.notesStatusRecordedOn = System.currentTimeMillis()
-                    progress.totalStoryPointsCovered += pageStoryPoints * 0.2f
-                }
+            UpdateSessionAdapter.ACTION_TAKE_NOTES -> if (progress.notesTakenStatus == PageActionStatus.PENDING) {
+                progress.notesTakenStatus = PageActionStatus.COMPLETE
+                progress.notesStatusRecordedOn = System.currentTimeMillis()
+                progress.totalStoryPointsCovered += page.pageStoryPoints * 0.2f
             }
-            UpdateSessionAdapter.ACTION_MEMORIZE -> {
-                if (progress.memorizedStatus == PageActionStatus.PENDING) {
-                    progress.memorizedStatus = PageActionStatus.COMPLETE
-                    progress.memorizedStatusRecordedOn = System.currentTimeMillis()
-                    progress.totalStoryPointsCovered += pageStoryPoints * 0.15f
-                }
+            UpdateSessionAdapter.ACTION_MEMORIZE -> if (progress.memorizedStatus == PageActionStatus.PENDING) {
+                progress.memorizedStatus = PageActionStatus.COMPLETE
+                progress.memorizedStatusRecordedOn = System.currentTimeMillis()
+                progress.totalStoryPointsCovered += page.pageStoryPoints * 0.15f
             }
-            UpdateSessionAdapter.ACTION_REVIEW -> {
-                if (progress.reviewCount < GlobalConstants.MINIMUM_REVIEW_COUNT) {
-                    progress.reviewCount += 1
-                    progress.lastReviewedOn = System.currentTimeMillis()
-                    progress.totalStoryPointsCovered += (pageStoryPoints * 0.2f) / GlobalConstants.MINIMUM_REVIEW_COUNT
-                } else {
-                    Toast.makeText(context, "Exhausted Review Counts", Toast.LENGTH_SHORT).show()
-                }
-            }
-            UpdateSessionAdapter.ACTION_PRACTICE -> {
-                if (progress.practiceCount < GlobalConstants.MINIMUM_PRACTICE_COUNT) {
-                    progress.practiceCount += 1
-                    progress.lastPracticedOn = System.currentTimeMillis()
-                    progress.totalStoryPointsCovered += (pageStoryPoints * 0.35f) / GlobalConstants.MINIMUM_PRACTICE_COUNT
-                } else {
-                    Toast.makeText(context, "Exhausted Practice Counts", Toast.LENGTH_SHORT).show()
-                }
-            }
+            UpdateSessionAdapter.ACTION_REVIEW -> if (progress.reviewCount < GlobalConstants.MINIMUM_REVIEW_COUNT) {
+                progress.reviewCount += 1
+                progress.lastReviewedOn = System.currentTimeMillis()
+                progress.totalStoryPointsCovered += (page.pageStoryPoints * 0.2f) / GlobalConstants.MINIMUM_REVIEW_COUNT
+            } else Toast.makeText(context, "Exhausted Review Counts", Toast.LENGTH_SHORT).show()
+            UpdateSessionAdapter.ACTION_PRACTICE -> if (progress.practiceCount < GlobalConstants.MINIMUM_PRACTICE_COUNT) {
+                progress.practiceCount += 1
+                progress.lastPracticedOn = System.currentTimeMillis()
+                progress.totalStoryPointsCovered += (page.pageStoryPoints * 0.35f) / GlobalConstants.MINIMUM_PRACTICE_COUNT
+            } else Toast.makeText(context, "Exhausted Practice Counts", Toast.LENGTH_SHORT).show()
         }
         pageProgressMap[pageId] = progress
-        db.pageCumulativeProgressDao().update(progress)
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            db.pageCumulativeProgressDao().update(progress)
+        }
         updateSessionListItems()
     }
 
     private fun loadPageProgress(pageIds: List<String>) {
-        ObjectBox.get().pageCumulativeProgressDao().getByPageIds(pageIds)
-            .subscribeOn(Schedulers.io())
-            .map { progressList ->
-                val map = LinkedHashMap<String, PageCumulativeProgress>()
-                for (progress in progressList) {
-                    map[progress.pageId] = progress
-                    storyPointsCoveredInThisSession += progress.totalStoryPointsCovered
+        viewLifecycleOwner.lifecycleScope.launch {
+            val map = withContext(Dispatchers.IO) {
+                val progressList = ObjectBox.get().pageCumulativeProgressDao().getByPageIds(pageIds)
+                val result = LinkedHashMap<String, PageCumulativeProgress>()
+                for (p in progressList) {
+                    result[p.pageId] = p
+                    storyPointsCoveredInThisSession += p.totalStoryPointsCovered
                 }
-                return@map map
+                result
             }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                pageProgressMap = LinkedHashMap()
-                pageProgressMap.putAll(it)
-                updateSessionListItems()
-                val sessionProgress = Math.round((storyPointsCoveredInThisSession / session.sessionStoryPoints) * 100)
-            })
+            pageProgressMap = LinkedHashMap<String, PageCumulativeProgress>().also { it.putAll(map) }
+            updateSessionListItems()
+        }
     }
 
     private fun updateSessionListItems() {
         val items = updateSessionListAdapter.getmItemsCopy() ?: return
-        val newListItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
-        for (item in items) {
+        val newItems = items.map { item ->
             if (item.type == BaseExpandableListAdapter.CHILD_TYPE) {
                 val pageModel = item as UpdateTopicPageModel
-                val progress = pageProgressMap[pageModel.objectId] as PageCumulativeProgress
-                pageModel.isRead = progress.readStatus == PageActionStatus.COMPLETE
-                pageModel.isNotesTaken = progress.notesTakenStatus == PageActionStatus.COMPLETE
-                pageModel.isMemorized = progress.memorizedStatus == PageActionStatus.COMPLETE
-                pageModel.reviewCount = progress.reviewCount
-                pageModel.practiceCount = progress.practiceCount
-                newListItems.add(pageModel)
-            } else {
-                newListItems.add(item)
-            }
+                val progress = pageProgressMap[pageModel.objectId] ?: return@map item
+                pageModel.apply {
+                    isRead = progress.readStatus == PageActionStatus.COMPLETE
+                    isNotesTaken = progress.notesTakenStatus == PageActionStatus.COMPLETE
+                    isMemorized = progress.memorizedStatus == PageActionStatus.COMPLETE
+                    reviewCount = progress.reviewCount
+                    practiceCount = progress.practiceCount
+                }
+            } else item
         }
-        updateSessionListAdapter.setmItems(newListItems)
+        updateSessionListAdapter.setmItems(ArrayList(newItems))
         binding.updateSessionList.adapter = updateSessionListAdapter
     }
 }
