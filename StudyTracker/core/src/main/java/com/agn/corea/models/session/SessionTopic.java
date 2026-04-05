@@ -1,18 +1,21 @@
 package com.agn.corea.models.session;
 
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import java.util.UUID;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
-
-@Entity
+@Entity(tableName = "session_topics",
+        indices = {
+                @Index(value = "topicId", unique = true),
+                @Index(value = "sessionId")
+        })
 public class SessionTopic {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
     public String sessionId;
-    @Unique
-    private String topicId = UUID.randomUUID().toString();
+    public String topicId = UUID.randomUUID().toString();
     public String sectionId;
     public String sectionTitle;
     public String firstPageId;

@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agn.corea.constants.PageActionStatus
 import com.agn.corea.models.subjects.Para
-import com.agn.corea.models.subjects.Para_
-import com.agn.corea.models.subjects.Section
-import com.agn.corea.models.subjects.Section_
 import com.agn.studytracker.R
 import com.agn.studytracker.common.adapter.BaseExpandableListAdapter
 import com.agn.studytracker.common.adapter.OnItemClickListener
@@ -25,7 +22,6 @@ import com.agn.studytracker.databinding.FragmentSubjectDetailsBinding
 import com.agn.studytracker.subjects.adapters.SubjectDetailsAdapter
 import com.agn.studytracker.subjects.models.SubjectPageModel
 import com.agn.studytracker.subjects.models.SubjectSectionModel
-import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -35,11 +31,11 @@ class SubjectDetailsFragment : Fragment(), OnItemClickListener {
 
     private var subjectId: String? = ""
     lateinit var binding: FragmentSubjectDetailsBinding
-    lateinit var subjectDetailsAdapter : SubjectDetailsAdapter
+    lateinit var subjectDetailsAdapter: SubjectDetailsAdapter
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_subject_details, container, false)
         return binding.root
@@ -58,64 +54,61 @@ class SubjectDetailsFragment : Fragment(), OnItemClickListener {
     }
 
     private fun loadSections() {
-        val disposable = RxQuery.observable(ObjectBox.store.boxFor(Section::class.java).query().equal(Section_.subjectId, subjectId).build())
-                .subscribeOn(Schedulers.io())
-                .map {
-                    val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
-                    for(section in it) {
-                        val sectionModel = SubjectSectionModel()
-                        sectionModel.sectionTitle = section.sectionTitle
-                        sectionModel.setSectionId(section.sectionId)
+        val db = ObjectBox.get()
+        db.sectionDao().observeBySubjectId(subjectId)
+            .subscribeOn(Schedulers.io())
+            .map { sections ->
+                val listItems = ArrayList<BaseExpandableListAdapter.ExpandableListItem>()
+                for (section in sections) {
+                    val sectionModel = SubjectSectionModel()
+                    sectionModel.sectionTitle = section.sectionTitle
+                    sectionModel.setSectionId(section.sectionId)
+                    listItems.add(sectionModel)
 
-
-                        listItems.add(sectionModel)
-                        var totalStoryPointsCoveredPerSection = 0.0f
-                        if(!section.pages.isEmpty()) {
-                            for(page in section.pages) {
-                                val pageModel = SubjectPageModel()
-                                pageModel.setPageId(page.pageId)
-                                pageModel.setSectionId(section.sectionId)
-                                pageModel.pageTitle = page.pageTitle
-                                val pageProgress = page.progress.target
-                                pageModel.isRead = pageProgress.readStatus == PageActionStatus.COMPLETE
-                                pageModel.isNotesTaken = pageProgress.notesTakenStatus == PageActionStatus.COMPLETE
-                                pageModel.isMemorized = pageProgress.memorizedStatus == PageActionStatus.COMPLETE
-                                pageModel.reviewCount = pageProgress.reviewCount
-                                pageModel.practiceCount = pageProgress.practiceCount
-                                totalStoryPointsCoveredPerSection += pageProgress.totalStoryPointsCovered
-                                listItems.add(pageModel)
-                            }
+                    var totalStoryPointsCoveredPerSection = 0.0f
+                    val pages = db.pageDao().getBySectionIdSync(section.sectionId)
+                    for (page in pages) {
+                        val pageModel = SubjectPageModel()
+                        pageModel.setPageId(page.pageId)
+                        pageModel.setSectionId(section.sectionId)
+                        pageModel.pageTitle = page.pageTitle
+                        val pageProgress = db.pageCumulativeProgressDao().getByPageIdSync(page.pageId)
+                        if (pageProgress != null) {
+                            pageModel.isRead = pageProgress.readStatus == PageActionStatus.COMPLETE
+                            pageModel.isNotesTaken = pageProgress.notesTakenStatus == PageActionStatus.COMPLETE
+                            pageModel.isMemorized = pageProgress.memorizedStatus == PageActionStatus.COMPLETE
+                            pageModel.reviewCount = pageProgress.reviewCount
+                            pageModel.practiceCount = pageProgress.practiceCount
+                            totalStoryPointsCoveredPerSection += pageProgress.totalStoryPointsCovered
                         }
-                        sectionModel.sectionProgressPercent = Math.round((totalStoryPointsCoveredPerSection / section.totalStoryPoints) * 100)
+                        listItems.add(pageModel)
                     }
-                    return@map listItems
+                    if (section.totalStoryPoints > 0)
+                        sectionModel.sectionProgressPercent = Math.round((totalStoryPointsCoveredPerSection / section.totalStoryPoints) * 100)
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    subjectDetailsAdapter.setItems(it)
-                    binding.sectionsList.adapter = subjectDetailsAdapter
-                })
+                return@map listItems
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                subjectDetailsAdapter.setItems(it)
+                binding.sectionsList.adapter = subjectDetailsAdapter
+            })
     }
 
     override fun onItemClick(pos: Int) {
         val pageModel = subjectDetailsAdapter.getItem(pos) as SubjectPageModel
-        RxQuery.single(ObjectBox.store.boxFor(Para::class.java).query().equal(Para_.pageId, pageModel.objectId).build())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    displayParagraphs(pageModel, it)
-                })
+        ObjectBox.get().paraDao().getByPageId(pageModel.objectId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                displayParagraphs(pageModel, it)
+            })
     }
 
-    override fun onItemLongClickListener(pos: Int, view: View) {
-
-    }
+    override fun onItemLongClickListener(pos: Int, view: View) {}
 
     private fun displayParagraphs(pageModel: SubjectPageModel, paraList: List<Para>) {
-        val dialogView = LayoutInflater.from(context).inflate(
-                R.layout.dialog_display_paragraphs,
-                null
-        )
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_display_paragraphs, null)
         val dialog = AlertDialog.Builder(activity).setView(dialogView).create()
         dialog.setCancelable(true)
         dialogView.findViewById<TextView>(R.id.pageTitle).text = pageModel.pageTitle
@@ -130,15 +123,13 @@ class SubjectDetailsFragment : Fragment(), OnItemClickListener {
         dialogView.findViewById<TextView>(R.id.practiceCount).text = pageModel.practiceCount.toString()
 
         val paraArr = paraList.toTypedArray()
-        dialogView.findViewById<TextView>(R.id.para1).text = if(paraArr.isNotEmpty()) paraArr[0].paraTitle else "N/A"
-        dialogView.findViewById<TextView>(R.id.para2).text = if(paraArr.size >= 2) paraArr[1].paraTitle else "N/A"
-        dialogView.findViewById<TextView>(R.id.para3).text = if(paraArr.size >= 3) paraArr[2].paraTitle else "N/A"
-        dialogView.findViewById<TextView>(R.id.para4).text = if(paraArr.size >= 4) paraArr[3].paraTitle else "N/A"
-        dialogView.findViewById<TextView>(R.id.para5).text = if(paraArr.size == 5) paraArr[4].paraTitle else "N/A"
+        dialogView.findViewById<TextView>(R.id.para1).text = if (paraArr.isNotEmpty()) paraArr[0].paraTitle else "N/A"
+        dialogView.findViewById<TextView>(R.id.para2).text = if (paraArr.size >= 2) paraArr[1].paraTitle else "N/A"
+        dialogView.findViewById<TextView>(R.id.para3).text = if (paraArr.size >= 3) paraArr[2].paraTitle else "N/A"
+        dialogView.findViewById<TextView>(R.id.para4).text = if (paraArr.size >= 4) paraArr[3].paraTitle else "N/A"
+        dialogView.findViewById<TextView>(R.id.para5).text = if (paraArr.size == 5) paraArr[4].paraTitle else "N/A"
         dialog.show()
     }
 
-    override fun onButtonClickOnItem(identifier: Int, pos: Int) {
-    }
-
+    override fun onButtonClickOnItem(identifier: Int, pos: Int) {}
 }

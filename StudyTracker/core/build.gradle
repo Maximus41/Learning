@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.objectbox)
 }
 
 android {
@@ -41,9 +40,13 @@ dependencies {
     implementation libs.appcompat
     implementation libs.material
 
+    // Room
+    api libs.room.runtime
+    api libs.room.rxjava2
+    kapt libs.room.compiler
+
     // Data
     implementation libs.gson
-    api libs.objectbox.rxjava
     api libs.rxandroid
     api libs.rxjava
 

@@ -1,22 +1,20 @@
 package com.agn.corea.models.subjects;
 
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import java.util.UUID;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
-import io.objectbox.relation.ToMany;
-
-@Entity
+@Entity(tableName = "subjects",
+        indices = {@Index(value = "subjectId", unique = true)})
 public class Subject {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
-    @Unique
-    private String subjectId = UUID.randomUUID().toString();
+    public String subjectId = UUID.randomUUID().toString();
     public String subjectTitle;
     public long createdOn;
     public int nosOfSections;
-    public ToMany<Section> sections;
 
     public String getSubjectId() {
         return subjectId;

@@ -1,7 +1,7 @@
 [versions]
 agp                 = "8.5.2"
 kotlin              = "2.0.21"
-objectbox           = "3.8.0"
+room                = "2.6.1"
 benManes            = "0.51.0"
 
 # AndroidX
@@ -56,7 +56,9 @@ dagger-compiler                 = { group = "com.google.dagger",               n
 
 # Data
 gson                            = { group = "com.google.code.gson",            name = "gson",                              version.ref = "gson" }
-objectbox-rxjava                = { group = "io.objectbox",                    name = "objectbox-rxjava",                  version.ref = "objectbox" }
+room-runtime                    = { group = "androidx.room",                   name = "room-runtime",                      version.ref = "room" }
+room-rxjava2                    = { group = "androidx.room",                   name = "room-rxjava2",                      version.ref = "room" }
+room-compiler                   = { group = "androidx.room",                   name = "room-compiler",                     version.ref = "room" }
 rxandroid                       = { group = "io.reactivex.rxjava2",            name = "rxandroid",                         version.ref = "rxandroid" }
 rxjava                          = { group = "io.reactivex.rxjava2",            name = "rxjava",                            version.ref = "rxjava" }
 
@@ -73,5 +75,4 @@ android-application = { id = "com.android.application",        version.ref = "ag
 android-library     = { id = "com.android.library",            version.ref = "agp" }
 kotlin-android      = { id = "org.jetbrains.kotlin.android",   version.ref = "kotlin" }
 kotlin-kapt         = { id = "org.jetbrains.kotlin.kapt",      version.ref = "kotlin" }
-objectbox           = { id = "io.objectbox",                   version.ref = "objectbox" }
 ben-manes-versions  = { id = "com.github.ben-manes.versions",  version.ref = "benManes" }

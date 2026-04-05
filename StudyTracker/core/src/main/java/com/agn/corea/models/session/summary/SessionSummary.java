@@ -1,15 +1,18 @@
 package com.agn.corea.models.session.summary;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(tableName = "session_summaries",
+        indices = {
+                @Index(value = "summaryId", unique = true),
+                @Index(value = "sessionId")
+        })
 public class SessionSummary {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
     public String sessionId;
-    @Unique
     public String summaryId;
     public float totalStoryPoints;
     public float totalStoryPointsCovered;

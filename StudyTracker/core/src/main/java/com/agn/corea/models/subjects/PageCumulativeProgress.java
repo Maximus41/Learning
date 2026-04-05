@@ -1,18 +1,21 @@
 package com.agn.corea.models.subjects;
 
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import java.util.UUID;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
-
-@Entity
+@Entity(tableName = "page_cumulative_progress",
+        indices = {
+                @Index(value = "progressId", unique = true),
+                @Index(value = "pageId")
+        })
 public class PageCumulativeProgress {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
     public String pageId;
-    @Unique
-    private String progressId = UUID.randomUUID().toString();
+    public String progressId = UUID.randomUUID().toString();
     public int readStatus;
     public long readStatusRecordedOn;
     public int notesTakenStatus;

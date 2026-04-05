@@ -1,20 +1,23 @@
 package com.agn.corea.models.subjects;
 
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import com.agn.corea.constants.GlobalConstants;
 
 import java.util.UUID;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
-
-@Entity
+@Entity(tableName = "paras",
+        indices = {
+                @Index(value = "paraId", unique = true),
+                @Index(value = "pageId")
+        })
 public class Para {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
     public String pageId;
-    @Unique
-    private String paraId = UUID.randomUUID().toString();
+    public String paraId = UUID.randomUUID().toString();
     public String paraTitle;
     public long createdOn;
     public float storyPoint = GlobalConstants.DEFAULT_PARA_STORY_POINTS;

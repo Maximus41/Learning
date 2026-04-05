@@ -13,7 +13,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.agn.corea.models.session.*
+import com.agn.corea.models.session.Session
+import com.agn.corea.models.session.SessionAssessment
+import com.agn.corea.models.session.SessionTopic
 import com.agn.corea.models.subjects.*
 import com.agn.studytracker.R
 import com.agn.studytracker.common.adapter.OnItemClickListener
@@ -23,7 +25,6 @@ import com.agn.studytracker.common.uicontrollers.MainActivity
 import com.agn.studytracker.databinding.FragmentSubjectsBinding
 import com.agn.studytracker.subjects.adapters.SubjectsAdapter
 import com.agn.studytracker.subjects.models.SubjectUiModel
-import io.objectbox.rx.RxQuery
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -54,27 +55,20 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         )
         binding.subjectsList.addItemDecoration(
             VerticalSpacingItemDecoration(
-                activity?.resources?.getDimensionPixelOffset(
-                    R.dimen.dp_3
-                )!!
+                activity?.resources?.getDimensionPixelOffset(R.dimen.dp_3)!!
             )
         )
         binding.subjectsList.adapter = SubjectsAdapter(this)
-        binding.createSubjectBtn.setOnClickListener(View.OnClickListener {
-            val dialogView = LayoutInflater.from(context).inflate(
-                R.layout.dialog_create_subject,
-                null
-            )
+        binding.createSubjectBtn.setOnClickListener {
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_subject, null)
             val dialog = AlertDialog.Builder(activity).setView(dialogView).create()
             val subject = dialogView.findViewById<EditText>(R.id.etCreateSubject)
-            dialogView.findViewById<Button>(R.id.btnCreate)
-                .setOnClickListener(View.OnClickListener {
-                    createSubject(subject.editableText.toString())
-                    dialog.dismiss()
-                })
+            dialogView.findViewById<Button>(R.id.btnCreate).setOnClickListener {
+                createSubject(subject.editableText.toString())
+                dialog.dismiss()
+            }
             dialog.show()
-        })
-
+        }
         loadSubjects()
     }
 
@@ -88,62 +82,52 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         val sub = Subject()
         sub.subjectTitle = subject
         sub.createdOn = System.currentTimeMillis()
-        ObjectBox.store.boxFor(Subject::class.java).put(sub)
+        ObjectBox.get().subjectDao().insert(sub)
         loadSubjects()
     }
 
     private fun loadSubjects() {
-        val sessionBox = ObjectBox.store.boxFor(Session::class.java)
-        val disposable = RxQuery.single(ObjectBox.store.boxFor(Subject::class.java).query().build())
-                .subscribeOn(Schedulers.io())
-                .map {
-                    val itemList = ArrayList<SubjectUiModel>()
-                    for(subject in it) {
-                        val subjectUiModel = SubjectUiModel()
-                        subjectUiModel.noOfSessions = sessionBox.query().equal(Session_.subjectId, subject.subjectId)
-                                .and().notEqual(Session_.startedOn, 0)
-                                .build().count()
-                        subjectUiModel.isLastSessionActive = sessionBox.query().equal(Session_.subjectId, subject.subjectId)
-                                .and().equal(Session_.isSessionActive, true)
-                                .build()
-                                .findFirst() != null
-                        subjectUiModel.subject = subject
-                        itemList.add(subjectUiModel)
-                    }
-                    return@map itemList
+        val db = ObjectBox.get()
+        db.subjectDao().getAll()
+            .subscribeOn(Schedulers.io())
+            .map {
+                val itemList = ArrayList<SubjectUiModel>()
+                for (subject in it) {
+                    val subjectUiModel = SubjectUiModel()
+                    subjectUiModel.noOfSessions = db.sessionDao().countStartedBySubjectId(subject.subjectId)
+                    subjectUiModel.isLastSessionActive = db.sessionDao().getFirstActiveBySubjectIdSync(subject.subjectId) != null
+                    subjectUiModel.subject = subject
+                    itemList.add(subjectUiModel)
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
-                    subjectsAdapter.setmItems(it)
-                    binding.subjectsList.adapter = subjectsAdapter
-                })
+                return@map itemList
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                subjectsAdapter = binding.subjectsList.adapter as SubjectsAdapter
+                subjectsAdapter.setmItems(it)
+                binding.subjectsList.adapter = subjectsAdapter
+            })
     }
 
     private fun countSessions(pos: Int) {
-        val item : Subject = subjectsAdapter.getItem(pos)
-        val disposable = RxQuery.single(
-            ObjectBox.store.boxFor(Session::class.java).query().equal(
-                Session_.subjectId,
-                item.subjectId
-            ).build()
-        )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    if (it == null || it.isEmpty())
-                        createFirstSession(item.subjectId)
-                    gotoSession(item.subjectId)
-                })
+        val item: Subject = subjectsAdapter.getItem(pos)
+        ObjectBox.get().sessionDao().getBySubjectId(item.subjectId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                if (it == null || it.isEmpty())
+                    createFirstSession(item.subjectId)
+                gotoSession(item.subjectId)
+            })
     }
 
-    private fun createFirstSession(subjectId: String) : Long {
+    private fun createFirstSession(subjectId: String): Long {
         val session = Session()
         session.subjectId = subjectId
         session.createdOn = System.currentTimeMillis()
         session.sessionSerialNo = 1
         session.sessionTitle = "First Session"
-       return ObjectBox.store.boxFor(Session::class.java).put(session);
+        return ObjectBox.get().sessionDao().insert(session)
     }
 
     private fun gotoSession(subjectId: String) {
@@ -151,7 +135,6 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         bundle.putString("subject_id", subjectId)
         NavHostFragment.findNavController(this).navigate(R.id.sessionsFragment, bundle)
     }
-
 
     override fun onItemClick(pos: Int) {
         val bundle = Bundle()
@@ -164,69 +147,58 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
         val popUpMenu = PopupMenu(context, view)
         popUpMenu.inflate(R.menu.item_delete_menu)
         popUpMenu.setOnMenuItemClickListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.deleteItem -> {
-                    Thread(Runnable {
-                        val sessionBox  = ObjectBox.store.boxFor(Session::class.java)
-                        val sectionBox = ObjectBox.store.boxFor(Section::class.java)
-                        val pageBox = ObjectBox.store.boxFor(Page::class.java)
-                        val paraBox = ObjectBox.store.boxFor(Para::class.java)
-                        val sessionTopicBox = ObjectBox.store.boxFor(SessionTopic::class.java)
-                        val progressBox = ObjectBox.store.boxFor(PageCumulativeProgress::class.java)
-                        val assessmentBox = ObjectBox.store.boxFor(SessionAssessment::class.java)
-                        val sessionList = sessionBox.query().equal(Session_.subjectId, subjectsAdapter.getItem(pos).subjectId).build().find()
-                        val sectionList = sectionBox.query().equal(Section_.subjectId, subjectsAdapter.getItem(pos).subjectId).build().find()
-                        val sessList = ArrayList<Session>()
+                    Thread {
+                        val db = ObjectBox.get()
+                        val subjectId = subjectsAdapter.getItem(pos).subjectId
+                        val sessionList = db.sessionDao().getBySubjectIdSync(subjectId)
+                        val sectionList = db.sectionDao().getBySubjectIdSync(subjectId)
                         val topList = ArrayList<SessionTopic>()
                         val pageList = ArrayList<Page>()
                         val progressList = ArrayList<PageCumulativeProgress>()
                         val paraList = ArrayList<Para>()
                         val assessmentList = ArrayList<SessionAssessment>()
 
-                        if(!sessionList.isEmpty()) {
+                        if (sessionList.isNotEmpty()) {
                             for (session in sessionList) {
-                                val topicList = sessionTopicBox.query()
-                                    .equal(SessionTopic_.sessionId, session.sessionId).build().find()
-                                if(!topicList.isEmpty()) {
+                                val topicList = db.sessionTopicDao().getBySessionIdSync(session.sessionId)
+                                if (topicList.isNotEmpty()) {
                                     for (topic in topicList) {
-                                        val firstPage = pageBox.query().equal(Page_.pageId, topic.firstPageId).build().findFirst()
-                                        val paras = paraBox.query().equal(Para_.pageId, firstPage!!.pageId).build().find()
-                                        val progress = progressBox.query().equal(PageCumulativeProgress_.pageId, firstPage.pageId).build().findFirst()
-                                        pageList.add(firstPage)
-                                        paraList.addAll(paras)
-                                        progressList.add(progress!!)
+                                        val firstPage = db.pageDao().getByPageIdSync(topic.firstPageId)
+                                        if (firstPage != null) {
+                                            pageList.add(firstPage)
+                                            paraList.addAll(db.paraDao().getByPageIdSync(firstPage.pageId))
+                                            db.pageCumulativeProgressDao().getByPageIdSync(firstPage.pageId)?.let { progressList.add(it) }
+                                        }
                                         if (!TextUtils.isEmpty(topic.secondPageId)) {
-                                            val secondPage = pageBox.query().equal(Page_.pageId, topic.secondPageId).build().findFirst()
-                                            val paras2 = paraBox.query().equal(Para_.pageId, secondPage!!.pageId).build().find()
-                                            val progress2 = progressBox.query().equal(PageCumulativeProgress_.pageId, secondPage.pageId).build().findFirst()
-                                            pageList.add(secondPage)
-                                            paraList.addAll(paras2)
-                                            progressList.add(progress2!!)
+                                            val secondPage = db.pageDao().getByPageIdSync(topic.secondPageId)
+                                            if (secondPage != null) {
+                                                pageList.add(secondPage)
+                                                paraList.addAll(db.paraDao().getByPageIdSync(secondPage.pageId))
+                                                db.pageCumulativeProgressDao().getByPageIdSync(secondPage.pageId)?.let { progressList.add(it) }
+                                            }
                                         }
                                     }
                                     topList.addAll(topicList)
                                 }
-                                if(session.isSessionAssessed) {
-                                    val sessionAssessment = assessmentBox.query().equal(SessionAssessment_.sessionId, session.sessionId).build().findFirst()
-                                    assessmentList.add(sessionAssessment!!)
+                                if (session.isSessionAssessed) {
+                                    db.sessionAssessmentDao().getBySessionIdSync(session.sessionId)?.let { assessmentList.add(it) }
                                 }
                             }
-                            sessList.addAll(sessionList)
                         }
-                        ObjectBox.store.boxFor(Subject::class.java).remove(subjectsAdapter.getItem(pos))
-                        sectionBox.remove(sectionList)
-                        sessionBox.remove(sessList)
-                        sessionTopicBox.remove(topList)
-                        pageBox.remove(pageList)
-                        progressBox.remove(progressList)
-                        paraBox.remove(paraList)
-                        assessmentBox.remove(assessmentList)
-                        requireActivity().runOnUiThread(Runnable {
-                            loadSubjects()
-                        })
 
-                    }).start()
+                        db.subjectDao().delete(subjectsAdapter.getItem(pos))
+                        db.sectionDao().deleteList(sectionList)
+                        db.sessionDao().deleteList(sessionList)
+                        db.sessionTopicDao().deleteList(topList)
+                        db.pageDao().deleteList(pageList)
+                        db.pageCumulativeProgressDao().deleteList(progressList)
+                        db.paraDao().deleteList(paraList)
+                        db.sessionAssessmentDao().deleteList(assessmentList)
 
+                        requireActivity().runOnUiThread { loadSubjects() }
+                    }.start()
                     return@setOnMenuItemClickListener true
                 }
                 else -> return@setOnMenuItemClickListener false
@@ -236,13 +208,9 @@ class SubjectsFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onButtonClickOnItem(identifier: Int, pos: Int) {
-        when(identifier) {
-            SubjectsAdapter.GOTO_SESSION_BTN -> {
-                countSessions(pos)
-            }
-            SubjectsAdapter.GOTO_SUMMARY_BTN -> {
-            }
+        when (identifier) {
+            SubjectsAdapter.GOTO_SESSION_BTN -> countSessions(pos)
+            SubjectsAdapter.GOTO_SUMMARY_BTN -> { }
         }
     }
-
 }

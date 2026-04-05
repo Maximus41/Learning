@@ -1,26 +1,15 @@
 package com.agn.studytracker.common.objectbox
 
 import android.content.Context
-import android.util.Log
-import com.agn.corea.models.session.MyObjectBox
-import com.agn.studytracker.BuildConfig
-import io.objectbox.BoxStore
-import io.objectbox.android.AndroidObjectBrowser
-
-
-
+import com.agn.corea.db.AppDatabase
 
 object ObjectBox {
 
-    lateinit var store : BoxStore
+    private lateinit var db: AppDatabase
 
-    public fun init(context: Context) {
-        store = MyObjectBox.builder()
-            .androidContext(context)
-            .build()
-        if (BuildConfig.DEBUG) {
-            val started: Boolean = AndroidObjectBrowser(store).start(context)
-            Log.i("ObjectBrowser", "Started: $started")
-        }
+    fun init(context: Context) {
+        db = AppDatabase.getInstance(context)
     }
+
+    fun get(): AppDatabase = db
 }

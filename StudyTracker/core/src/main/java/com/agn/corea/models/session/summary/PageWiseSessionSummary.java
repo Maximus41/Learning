@@ -1,16 +1,20 @@
 package com.agn.corea.models.session.summary;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(tableName = "page_wise_session_summaries",
+        indices = {
+                @Index(value = "pageSummaryId", unique = true),
+                @Index(value = "summaryId"),
+                @Index(value = "pageId")
+        })
 public class PageWiseSessionSummary {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
     public String summaryId;
     public String pageId;
-    @Unique
     public String pageSummaryId;
     public int readStatus;
     public long readStatusRecordedOn;

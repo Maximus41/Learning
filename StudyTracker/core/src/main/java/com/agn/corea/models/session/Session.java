@@ -1,19 +1,21 @@
 package com.agn.corea.models.session;
 
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import java.util.UUID;
 
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Unique;
-import io.objectbox.relation.ToMany;
-
-@Entity
+@Entity(tableName = "sessions",
+        indices = {
+                @Index(value = "sessionId", unique = true),
+                @Index(value = "subjectId")
+        })
 public class Session {
-    @Id
+    @PrimaryKey(autoGenerate = true)
     public long obId;
     public String subjectId;
-    @Unique
-    private String sessionId = UUID.randomUUID().toString();
+    public String sessionId = UUID.randomUUID().toString();
     public String sessionTitle;
     public int sessionSerialNo;
     public long createdOn;
@@ -25,7 +27,6 @@ public class Session {
     public boolean isSessionActive;
     public boolean isSessionAssessed;
     public float sessionStoryPoints;
-    public ToMany<SessionTopic> topics;
 
     public String getSessionId() {
         return sessionId;
