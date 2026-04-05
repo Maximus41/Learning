@@ -1,3 +1,20 @@
-include ':core'
-include ':app'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }  // required for laser-native-editor
+    }
+}
+
 rootProject.name = "StudyTracker"
+include ':app'
+include ':core'

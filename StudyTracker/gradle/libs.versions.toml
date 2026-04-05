@@ -1,0 +1,77 @@
+[versions]
+agp                 = "8.5.2"
+kotlin              = "2.0.21"
+objectbox           = "3.8.0"
+benManes            = "0.51.0"
+
+# AndroidX
+coreKtx             = "1.15.0"
+appcompat           = "1.7.0"
+material            = "1.12.0"
+constraintlayout    = "2.2.0"
+legacySupport       = "1.0.0"
+lifecycle           = "2.8.7"
+navigation          = "2.8.5"
+
+# DI
+dagger              = "2.52"
+
+# Data
+gson                = "2.11.0"
+rxjava              = "2.2.21"
+rxandroid           = "2.1.1"
+
+# UI
+laserEditor         = "3.0.3"
+
+# Testing
+junit               = "4.13.2"
+junitExt            = "1.2.1"
+espresso            = "3.6.1"
+
+[libraries]
+# AndroidX Core
+core-ktx                        = { group = "androidx.core",                  name = "core-ktx",                          version.ref = "coreKtx" }
+appcompat                       = { group = "androidx.appcompat",              name = "appcompat",                         version.ref = "appcompat" }
+material                        = { group = "com.google.android.material",     name = "material",                          version.ref = "material" }
+constraintlayout                = { group = "androidx.constraintlayout",       name = "constraintlayout",                  version.ref = "constraintlayout" }
+legacy-support-v4               = { group = "androidx.legacy",                 name = "legacy-support-v4",                 version.ref = "legacySupport" }
+
+# Lifecycle
+lifecycle-viewmodel             = { group = "androidx.lifecycle",              name = "lifecycle-viewmodel",               version.ref = "lifecycle" }
+lifecycle-livedata              = { group = "androidx.lifecycle",              name = "lifecycle-livedata",                version.ref = "lifecycle" }
+lifecycle-runtime               = { group = "androidx.lifecycle",              name = "lifecycle-runtime",                 version.ref = "lifecycle" }
+lifecycle-viewmodel-savedstate  = { group = "androidx.lifecycle",              name = "lifecycle-viewmodel-savedstate",    version.ref = "lifecycle" }
+
+# Navigation
+navigation-fragment             = { group = "androidx.navigation",             name = "navigation-fragment",               version.ref = "navigation" }
+navigation-ui                   = { group = "androidx.navigation",             name = "navigation-ui",                     version.ref = "navigation" }
+
+# Kotlin
+kotlin-stdlib                   = { group = "org.jetbrains.kotlin",            name = "kotlin-stdlib",                     version.ref = "kotlin" }
+
+# DI
+dagger                          = { group = "com.google.dagger",               name = "dagger",                            version.ref = "dagger" }
+dagger-compiler                 = { group = "com.google.dagger",               name = "dagger-compiler",                   version.ref = "dagger" }
+
+# Data
+gson                            = { group = "com.google.code.gson",            name = "gson",                              version.ref = "gson" }
+objectbox-rxjava                = { group = "io.objectbox",                    name = "objectbox-rxjava",                  version.ref = "objectbox" }
+rxandroid                       = { group = "io.reactivex.rxjava2",            name = "rxandroid",                         version.ref = "rxandroid" }
+rxjava                          = { group = "io.reactivex.rxjava2",            name = "rxjava",                            version.ref = "rxjava" }
+
+# UI
+laser-editor                    = { group = "com.github.irshulx",              name = "laser-native-editor",               version.ref = "laserEditor" }
+
+# Testing
+junit                           = { group = "junit",                           name = "junit",                             version.ref = "junit" }
+junit-ext                       = { group = "androidx.test.ext",               name = "junit",                             version.ref = "junitExt" }
+espresso-core                   = { group = "androidx.test.espresso",          name = "espresso-core",                     version.ref = "espresso" }
+
+[plugins]
+android-application = { id = "com.android.application",        version.ref = "agp" }
+android-library     = { id = "com.android.library",            version.ref = "agp" }
+kotlin-android      = { id = "org.jetbrains.kotlin.android",   version.ref = "kotlin" }
+kotlin-kapt         = { id = "org.jetbrains.kotlin.kapt",      version.ref = "kotlin" }
+objectbox           = { id = "io.objectbox",                   version.ref = "objectbox" }
+ben-manes-versions  = { id = "com.github.ben-manes.versions",  version.ref = "benManes" }
