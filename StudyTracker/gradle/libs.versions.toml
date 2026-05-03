@@ -21,7 +21,7 @@ dagger              = "2.52"
 gson                = "2.11.0"
 
 # UI
-laserEditor         = "3.0.3"
+laserEditor         = "3.0.2"
 
 # Testing
 junit               = "4.13.2"

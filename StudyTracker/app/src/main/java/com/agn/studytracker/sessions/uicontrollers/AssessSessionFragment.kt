@@ -150,7 +150,6 @@ class AssessSessionFragment : Fragment(), OnItemClickListener {
         binding.root.findViewById<AppCompatImageButton>(R.id.action_insert_image).setOnClickListener { getEditor().openImagePicker() }
         binding.root.findViewById<AppCompatImageButton>(R.id.action_insert_link).setOnClickListener { getEditor().insertLink() }
         binding.root.findViewById<AppCompatImageButton>(R.id.action_erase).setOnClickListener { getEditor().clearAllContents() }
-        binding.root.findViewById<AppCompatImageButton>(R.id.action_blockquote).setOnClickListener { getEditor().updateTextStyle(EditorTextStyle.BLOCKQUOTE) }
     }
 
     private fun getEditor(): Editor = when {
